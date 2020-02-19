@@ -1,0 +1,1 @@
+0 */6 * * * com.github.darkoverlordofdata.badabing --update >/dev/null 2>&1

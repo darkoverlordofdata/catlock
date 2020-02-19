@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Bing Lock
+Comment=Lock screen with Bing wallpaper
+Exec=com.github.darkoverlordofdata.catlock
+Icon=/usr/share/icons/com.github.darkoverlordofdata.badabing.svg
+Terminal=false
+Categories=Utility;
+StartupNotify=false
+Name[en_US]=com.github.darkoverlordofdata.catlock.desktop

@@ -1,0 +1,20 @@
+Source: com.github.darkoverlordofdata.badabing
+Section: x11
+Priority: optional
+Maintainer: bruce davidson <brucedavidson@darkoverlordofdata.com> 
+Build-Depends: meson,
+               debhelper (>= 10.5.1),
+               libgee-0.8-dev,
+               libjson-glib-dev,
+               valac (>= 0.30)glock
+Standards-Version: 4.1.1
+Homepage: https://github.com/darkoverlordofdata/bin
+
+Package: com.github.darkoverlordofdata.binglock
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Recommends: indicator-notifications
+Description: Lock screeb using Bing wallpaper
+ Images are copyright to their respective owners. Bing is a trademark of Microsoft. 
+ .
+ This application is not affiliated with Bing or its services in any way.

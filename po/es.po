@@ -1,0 +1,45 @@
+# Spanish translations for com.github.darkoverlordofdata.badabing package.
+# Copyright (C) 2019 THE com.github.darkoverlordofdata.badabing'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the com.github.darkoverlordofdata.badabing package.
+# Automatically generated, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: com.github.darkoverlordofdata.badabing\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-03-01 16:28-0800\n"
+"PO-Revision-Date: 2019-03-01 15:40-0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: data/com.github.darkoverlordofdata.badabing.desktop.in:3
+#: data/com.github.darkoverlordofdata.badabing.desktop.in:4
+#: data/com.github.darkoverlordofdata.badabing.appdata.xml.in:6
+msgid "Bing Wallpaper"
+msgstr ""
+
+#: data/com.github.darkoverlordofdata.badabing.desktop.in:5
+#: data/com.github.darkoverlordofdata.badabing.appdata.xml.in:7
+#: data/com.github.darkoverlordofdata.badabing.appdata.xml.in:9
+msgid "Bing Wallpaper Daily Changer"
+msgstr ""
+
+#: data/com.github.darkoverlordofdata.badabing.desktop.in:8
+msgid "application-default-icon"
+msgstr ""
+
+#: data/com.github.darkoverlordofdata.badabing.desktop.in:10
+msgid "Bing;Wallpaper;"
+msgstr ""
+
+#: data/com.github.darkoverlordofdata.badabing.appdata.xml.in:10
+msgid ""
+"Images are copyright to their respective owners. Bing is a trademark of "
+"Microsoft. This application is not affiliated with Bing or its services in "
+"any way."
+msgstr ""

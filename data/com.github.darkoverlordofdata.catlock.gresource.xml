@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/darkoverlordofdata/badabing">
+    <!-- <file alias="application.css" compressed="true">application.css</file>
+    <file alias="treeview-list.ui" compressed="true">treeview-list.ui</file> -->
+  </gresource>
+</gresources>
