@@ -66,10 +66,11 @@ public class CatLock.MainWindow : GLib.Object
     string full_name = "";
     string salt = "";
     string passwd = "";
+    string instruc = "Enter password";
     string uline = "";
     string pline = "";
-    string tline = "";
-    string dline = "";
+    char tline[256];
+    char dline[256];
     string imgfn = "";
     string boximgfn = "";
     string fontname_small = "";
@@ -96,7 +97,6 @@ public class CatLock.MainWindow : GLib.Object
     public MainWindow(Parameters parms) 
     {
         this.parms = parms;
-
         initialize();
         processEvent(ApplicationInit);        
         run();
@@ -321,10 +321,6 @@ public class CatLock.MainWindow : GLib.Object
                             pline = pline + "*"; 
                         }
                         draw();
-                        //  print(@"new_pline_len = $new_pline_len");
-                        //  if ((parms.verbosity > 1) && (pline.length < pass_num_show)) { 
-                            //  print("*"); 
-                        //  }
                     }
                     else if (len + num >= 256) {
                         passwd = "";
@@ -344,15 +340,28 @@ public class CatLock.MainWindow : GLib.Object
             draw();
 
         ev.type = -1;
+        if (inactive > 0) {
+            inactive--;
+            if (inactive <= 0) {
+                len = 0;
+                pline = "";
+                processEvent(ApplicationTimeout);
+            }
+        }
+
+
         /* check for keyboard input events */
         while(display.pending() > 0) {
             display.next_event(ref ev);
         }
-        /* sleep until next frame @ 1.0 fps*/
-        //  Thread.usleep(1000000);
 
+        /* 
+         * sleep for 1/20 second to allow 
+         * capture of the x11 events 
+         */
         Thread.usleep(50000);
         if (ticks++ >= 20) {
+            // 1.0 fps
             ticks = 0;
             draw();
         }
@@ -446,20 +455,11 @@ public class CatLock.MainWindow : GLib.Object
      * draw the text on the screen
      */
      public void draw() {
-        var now = new DateTime.now_local ();
-
-        time_t now1 = time_t();
-        GLib.Time t = GLib.Time.local(now1);
-        //  struct tm *t = localtime(&now);
-
-     
-        string instruc = "Enter password";
-
-        tline = now.format("%l:%M");
-        dline = now.format("%A, %B %d");
-    
-        //  now.strftime(tline, BUFLEN-1, "%l:%M", t);
-        //  now.strftime(dline, BUFLEN-1, "%A, %B %d", t);
+         
+        var now = time_t();
+        var local = GLib.Time.local(now);
+        var tlen = (int)local.strftime(tline, "%l:%M");
+        var dlen = (int)local.strftime(dline, "%A, %B %-d");
     
         X.clear_window(display, active);
     
@@ -480,8 +480,8 @@ public class CatLock.MainWindow : GLib.Object
         switch (state) {
     
         case ApplicationDate:
-            drawable.draw_string(&color, font_time, 40, 600, (char *)tline, tline.length);
-            drawable.draw_string(&color, font_date, 40, 670, (char *)dline, dline.length);
+            drawable.draw_string(&color, font_time, 40, 600, tline, tlen);
+            drawable.draw_string(&color, font_date, 40, 670, dline, dlen);
             break;
     
         case ApplicationPassword:

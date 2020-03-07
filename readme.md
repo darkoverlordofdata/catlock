@@ -37,11 +37,13 @@ Bal has 'paw-tested' catlock, and has not been able to do anything evil to my co
 
 ## install:
 
-    meson build --prefix=/usr
-    ninja -C build
-    sudo ninja -C build install
-    sudo chmod 755 /usr/local/bin/com.github.darkoverlordofdata.catlock
-    sudo chmod u+s /usr/local/bin/com.github.darkoverlordofdata.catlock
+```bash
+meson build --prefix=/usr
+ninja -C build
+sudo ninja -C build install
+sudo chmod 755 /usr/local/bin/com.github.darkoverlordofdata.catlock
+sudo chmod u+s /usr/local/bin/com.github.darkoverlordofdata.catlock
+```
 
 Then add to .config/openbox/rc.xml
 ```
@@ -79,4 +81,5 @@ this will de-couple the 2 programs allowing catlock to work seamlessly with any 
 ![Screenshot](https://github.com/darkoverlordofdata/catlock/raw/master/assets/1.png "Screenshot")
 
 ![Screenshot](https://github.com/darkoverlordofdata/catlock/raw/master/assets/2.png "Screenshot")
+
 
