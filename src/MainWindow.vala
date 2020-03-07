@@ -262,7 +262,7 @@ public class CatLock.MainWindow : GLib.Object
                     }
 
                     if (salt == "") salt = get_password();
-                    if (salt == User.crypt(passwd, salt)) running = false;
+                    if (salt == (string)User.crypt(passwd, salt)) running = false;
 
                     if (running) {
                         display.bell(100);
@@ -283,7 +283,7 @@ public class CatLock.MainWindow : GLib.Object
                         print("[escape]\n"); 
                     }
 
-                    running = false;
+                    //  running = false;
                     if (state == ApplicationDate) break;
 
                     if (first) {
@@ -335,7 +335,6 @@ public class CatLock.MainWindow : GLib.Object
                         pline = "";
                         draw();
                     }
-                    //  print(@"passwd = $passwd\n");
 
                     break;
             }
@@ -349,9 +348,14 @@ public class CatLock.MainWindow : GLib.Object
         while(display.pending() > 0) {
             display.next_event(ref ev);
         }
-        /* sleep until next frame */
-        Thread.usleep(10000);
-        if (count++ > 20000) running = false;
+        /* sleep until next frame @ 1.0 fps*/
+        //  Thread.usleep(1000000);
+
+        Thread.usleep(50000);
+        if (ticks++ >= 20) {
+            ticks = 0;
+            draw();
+        }
 
 
     }
@@ -360,11 +364,8 @@ public class CatLock.MainWindow : GLib.Object
      * Clean up
      */
      public override void dispose() {
-        //  destroy_window(display, window);
         display.ungrab_pointer((int)CURRENT_TIME);
         display.color_free(visual, cm, &color);
-        //  draw_destroy(drawable); 
-        X.destroy_window(display, window);
     }
 
     /**
@@ -445,11 +446,20 @@ public class CatLock.MainWindow : GLib.Object
      * draw the text on the screen
      */
      public void draw() {
-        var now = new DateTime.now_local ();        
+        var now = new DateTime.now_local ();
+
+        time_t now1 = time_t();
+        GLib.Time t = GLib.Time.local(now1);
+        //  struct tm *t = localtime(&now);
+
+     
         string instruc = "Enter password";
 
         tline = now.format("%l:%M");
         dline = now.format("%A, %B %d");
+    
+        //  now.strftime(tline, BUFLEN-1, "%l:%M", t);
+        //  now.strftime(dline, BUFLEN-1, "%A, %B %d", t);
     
         X.clear_window(display, active);
     

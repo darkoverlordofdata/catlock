@@ -40,27 +40,33 @@ Bal has 'paw-tested' catlock, and has not been able to do anything evil to my co
     meson build --prefix=/usr
     ninja -C build
     sudo ninja -C build install
-    sudo chmod 755 /usr/local/bin/catlock
-    sudo chmod u+s /usr/local/bin/catlock
+    sudo chmod 755 /usr/local/bin/com.github.darkoverlordofdata.catlock
+    sudo chmod u+s /usr/local/bin/com.github.darkoverlordofdata.catlock
 
 Then add to .config/openbox/rc.xml
 ```
 <keybind key="W-l">
     <action name="Execute">
-    <command>catlock</command>
+    <command>com.github.darkoverlordofdata.catlock</command>
     </action>
 </keybind>
 ```
 
-## testing: 
+### testing: 
 
-    sudo ./catlock -a <user>
+    com.github.darkoverlordofdata.catlock -a <user>
+
+#### return key
+```bash
+[darko@NomadBSD:~/GitHub/catlock] com.github.darkoverlordofdata.catlock
+Segmentation fault
+```
 
 ## todo
 
 display today's holiday along with date. Example usage:
 
-    sudo ./catlock --calendar orage
+    com.github.darkoverlordofdata.catlock --calendar orage
 
 load fonts from /usr/local/share/fonts using imlib2, removing the dependacy on Xft.
 

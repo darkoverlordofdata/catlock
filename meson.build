@@ -36,7 +36,6 @@ subdir('po')
 executable(
     meson.project_name(),
     'src/CatLock.vala',
-    # 'src/LockerApplication.vala',
     'src/Parameters.vala',
     'src/MainWindow.vala',
 

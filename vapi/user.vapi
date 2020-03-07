@@ -56,7 +56,7 @@
 	}
 
 	[CCode (cname = "crypt")]
-	public string crypt(string key, string salt);
+	public char* crypt(string key, string salt);
 
 	public int getuid();
 
