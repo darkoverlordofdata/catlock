@@ -38,6 +38,11 @@ executable(
     'src/CatLock.vala',
     'src/Parameters.vala',
     'src/MainWindow.vala',
+    'src/calendar/Calendar.vala',
+    'src/calendar/CalendarNode.vala',
+    'src/calendar/Event.vala',
+    'src/calendar/Holidays.vala',
+    'src/calendar/Rule.vala',
 
     import('gnome').compile_resources(
         'as-resources', join_paths('data', meson.project_name() + '.gresource.xml'),

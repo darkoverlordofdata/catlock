@@ -88,6 +88,7 @@ public class CatLock.MainWindow : GLib.Object
     int inactive = 0;
     const int timeout = 1000;
     const int pass_num_show = 32;
+    Holidays holidays;
 
     /**
      * Run:
@@ -97,10 +98,21 @@ public class CatLock.MainWindow : GLib.Object
     public MainWindow(Parameters parms) 
     {
         this.parms = parms;
-        initialize();
-        processEvent(ApplicationInit);        
-        run();
-        dispose();
+
+        //  var c = new Calendar("/home/darko/GitHub/calendar/orage.ics");
+        holidays = new Holidays("/home/darko/GitHub/calendar/orage.ics");
+
+        //  print(@"today: $(holidays.today)\n");
+        holidays.list.foreach((entry) => {
+            //  print(@"$entry\n");
+            print(@"$(holidays.today) - $(entry.date) $(entry.description)\n");
+
+        });
+
+        //  initialize();
+        //  processEvent(ApplicationInit);        
+        //  run();
+        //  dispose();
     }
 
 
@@ -373,8 +385,10 @@ public class CatLock.MainWindow : GLib.Object
      * Clean up
      */
      public override void dispose() {
-        display.ungrab_pointer((int)CURRENT_TIME);
-        display.color_free(visual, cm, &color);
+         if (display != null) {
+            display.ungrab_pointer((int)CURRENT_TIME);
+            display.color_free(visual, cm, &color);
+         }
     }
 
     /**
