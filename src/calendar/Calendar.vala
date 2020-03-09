@@ -24,9 +24,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-
- public class CatLock.Calendar : Object
- {
+/**
+ * Load calendar from an ICS file 
+ */
+public class CatLock.Calendar : Object
+{
 	public string version = "";      	//  VERSION:2.0
 	public string prodid = "";       	//  PRODID:icalendar-ruby
 	public string calscale = "";     	//  CALSCALE:GREGORIAN
@@ -70,11 +72,6 @@
 	
 		var array = str.split("\r\n");
 		
-		print(@"found $count,  $(array.length)\n");
-		
-		//  for (int i=0; i<count; i++) {
-		//  	print(@"$(array[i])\n");
-		//  }
 
 		CalendarNode[] nodes = new CalendarNode[count];
 		for (int i=0; i<count; i++) {
@@ -187,14 +184,7 @@
 						event.id = nodes[i].value;
 					}
 					break;
-
 			}
 		}
-
-		print(@"nevents = $(events.length)\n");
-		//  for (int i=0; i<count; i++) {
-		//  	print(@"$(nodes[i].name)|$(nodes[i].value)|$(nodes[i].param)\n");
-		//  }
-
 	 }
  } 

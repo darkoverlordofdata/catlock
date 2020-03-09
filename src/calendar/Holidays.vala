@@ -58,7 +58,7 @@ namespace CatLock
 } 
 
 public class CatLock.Holiday : Object
- {
+{
 	 public Holiday next;       		//  next => in list
 	 public int date;            		//  vevent dtstart
 	 public string description = ""; 	//  vevent summary
@@ -69,17 +69,32 @@ public class CatLock.Holiday : Object
 	 
 }
   
+/**
+ * Load holidays fron ICS file 
+ */
 public class CatLock.Holidays : Object
 {
 	public List<Holiday> list = new List<Holiday>();
 	public int today;           		//  today's date
+	public int tomorrow;				// 	tomorrow's date
 	public int count;           		//  count of holidays
-	
-	public Holidays(string path) {
+
+	public Holidays() {
         var now = time_t();
 		var t = GLib.Time.local(now);
 		
 		today = (1900+t.year)*10000 + (t.month+1)*100 + t.day;
+
+		Date d = {};
+		d.set_time_t(now);
+		d.add_days(1);
+
+		tomorrow = ((d.get_year())*10000 + (d.get_month())*100 + d.get_day());
+
+	}
+		
+	public Holidays.from_path(string path) {
+		this();
 		var cal = new Calendar(path);
 		Rule? rr;
 
@@ -182,6 +197,35 @@ public class CatLock.Holidays : Object
 				list.append(new_node);
 			}
 		}
+	}
+
+	public string[] today_is () {
+
+		string[] result = {};
+
+        list.foreach((entry) => {
+			if (today == entry.date) {
+				result.resize(result.length+1);
+				result[result.length-1] = entry.description;
+			}
+        });
+
+		return result;
+
+	}
+
+	public string[] tomorrow_is () {
+
+		string[] result = {};
+        list.foreach((entry) => {
+			if (tomorrow == entry.date) {
+				result.resize(result.length+1);
+				result[result.length-1] = entry.description;
+			}
+        });
+
+		return result;
+
 	}
 }
 

@@ -42,7 +42,7 @@
     public const string APP_NAME = "CatLock";
     public const string VERSION_INFO = "Dev";
     public const string RELEASE = "dev";
+    public const string ICS = "orage/orage.ics";
     public const int BUFLEN = 256;
-
 
 }
