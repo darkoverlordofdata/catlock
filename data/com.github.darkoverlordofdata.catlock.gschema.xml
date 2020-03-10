@@ -1,0 +1,11 @@
+<schemalist>
+  <schema id="com.github.darkoverlordofdata.catlock" path="/com/github/darkoverlordofdata/catlock/" gettext-domain="com.github.darkoverlordofdata.catlock">
+
+    <key name="calendar-path" type="s">
+      <default>"~/.local/share/orage/orage.ics"</default>
+      <summary>Calendar</summary>
+      <description>ICS Calendar data</description>
+    </key>
+
+  </schema>
+</schemalist>

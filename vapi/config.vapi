@@ -7,4 +7,5 @@ namespace Config {
     public const string VERSION;
     public const string PREFIX;
     public const string PACKAGE;
+    public const int BUFLEN;
 }

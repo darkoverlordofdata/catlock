@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2019 darkoverlordofdata <darkoverlordofdata@gmail.com> -->
 <component type="desktop">
-  <id>com.github.darkoverlordofdata.badabing</id>
+  <id>com.github.darkoverlordofdata.catlock</id>
   <metadata_license>CC0</metadata_license>
-  <name>badabing</name>
-  <summary>badabing Daily Wallpaper Changer</summary>
+  <name>catlock</name>
+  <summary>Cat Proof Screen Lock</summary>
   <description>
-    <p>badabing Daily Wallpaper Changer</p>
-    <p>Images are copyright to their respective owners. Bing is a trademark of Microsoft. This application is not affiliated with Bing or its services in any way.</p>
+    <p>catlock - Cat Proof Screen Lock</p>
   </description>
     <custom>
         <value key="x-appcenter-color-primary">#603461</value>

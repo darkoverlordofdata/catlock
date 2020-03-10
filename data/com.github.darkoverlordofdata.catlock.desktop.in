@@ -1,9 +1,10 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Bing Lock
-Comment=Lock screen with Bing wallpaper
+Name=CatLock
+Comment=Cat Proof Screen Lock
 Exec=com.github.darkoverlordofdata.catlock
-Icon=/usr/share/icons/com.github.darkoverlordofdata.badabing.svg
+Icon=@prefix@/icons/com.github.darkoverlordofdata.catlock.png
 Terminal=false
 Categories=Utility;
+

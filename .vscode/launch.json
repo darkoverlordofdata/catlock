@@ -9,7 +9,7 @@
             "type": "gdb",
             "request": "launch",
             "target": "${workspaceFolder}/build/meson-out/com.github.darkoverlordofdata.catlock",
-            "arguments": "--verbosity=2",
+            "arguments": "--verbosity=2 --calendar",
             "cwd": "${workspaceRoot}",
             "valuesFormatting": "parseText"
         }

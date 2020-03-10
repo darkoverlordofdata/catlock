@@ -24,10 +24,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
- using X;
- using Imlib2;
- using User;
-
+using X;
+using Imlib2;
+using User;
+using Config;
 
 /**
  * Wallpaper Application
@@ -40,18 +40,20 @@ public class CatLock.MainWindow : GLib.Object
     X.Window active;        // the active window
     X.Window window;        // top level window
     X.Window panel;         // drawing panel
-    X.Colormap cm;
-    X.Cursor invisible;
-    X.Visual visual;
     X.Event ev;             // input events
+    X.Colormap cm;          // overhead
+    X.Cursor invisible;     // overhead
+    X.Visual visual;        // overhead
+
     X.FtDraw drawable;      // freetype drawable
-    X.FtColor color;        // freetype color to draw
-    X.FtColor bgcolor;      // freetype color tp draw
-    X.FtFont *font_08;   // small font
-    X.FtFont *font_16;   // small font
-    X.FtFont *font_24;     // font for password
-    X.FtFont *font_64;    // font for time
-    X.FtFont *font_32;    // font for date
+    X.FtColor color;        // freetype foreground color to draw
+    X.FtColor bgcolor;      // freetype background color to draw
+    X.FtFont * font_08;     // freetype small font
+    X.FtFont * font_16;     // freetype medium font
+    X.FtFont * font_24;     // freetype font for password
+    X.FtFont * font_64;     // freetype font for time
+    X.FtFont * font_32;     // freetype font for date
+
     string fontname_08 = "";
     string fontname_16 = "";
     string fontname_24 = "";
@@ -75,10 +77,9 @@ public class CatLock.MainWindow : GLib.Object
     string pline = "";
     string imgfn = "";
     string boximgfn = "";
-    string calendar = "";
-    char tline[256];
-    char dline[256];
-    char buf[256];
+    char tline[BUFLEN];
+    char dline[BUFLEN];
+    char buf[BUFLEN];
     string[] today_is;
     string[] tomorrow_is;
     int count = 0;
@@ -94,22 +95,27 @@ public class CatLock.MainWindow : GLib.Object
     /**
      * Run:
      * 
-     * com.github.darkoverlordofdata.binglock
+     * com.github.darkoverlordofdata.catlock
      */
     public MainWindow(Parameters parms) 
     {
         this.parms = parms;
 
         if (parms.calendar) {
-            calendar = @"$(Environment.get_user_data_dir())/$ICS";
-            if (FileUtils.test(calendar, FileTest.EXISTS)) {
-                holidays = new Holidays.from_path(@"$(Environment.get_user_data_dir())/$ICS");
+
+            var config = new Settings(APPLICATION_ID);
+            var ics = config.get_string("calendar-path");
+            var path = @"$(Environment.get_home_dir())/$ics";
+
+            if (FileUtils.test(path, FileTest.EXISTS)) {
+                holidays = new Holidays.from_path(path);
     
                 //  holidays.today = 20200310;
                 //  holidays.tomorrow = 20200311;
         
                 today_is = holidays.today_is();
                 tomorrow_is = holidays.tomorrow_is();
+
                 //  print("Today:\n");
                 //  foreach (var s in today_is) {
                 //      print(@"$s\n");
@@ -215,14 +221,7 @@ public class CatLock.MainWindow : GLib.Object
         invisible = display.create_pixmap_cursor(pmap, pmap, &black, &black, 0, 0);
 
         // load fonts
-        generateFontNames(parms.font);
-        font_24 = display.font_open_name(screen, fontname_24);
-
-        if (font_24 == null) {
-            print(@"font \"$(parms.font)\" does not exist - using fallback.\n");
-            generateFontNames("6x10");
-            font_24 = display.font_open_name(screen, fontname_24);
-        }
+        set_font_name(parms.font);
         font_08 = display.font_open_name(screen, fontname_08);
         font_16 = display.font_open_name(screen, fontname_16);
         font_24 = display.font_open_name(screen, fontname_24);
@@ -280,7 +279,7 @@ public class CatLock.MainWindow : GLib.Object
                 catch (GLib.SpawnError ex) { }
             }
             buf[0] = 0;
-            num = X.lookup_string(&ev.xkey, buf, 256, &ksym, null);
+            num = X.lookup_string(&ev.xkey, buf, BUFLEN, &ksym, null);
             buf[num] = 0;
 
             switch(ksym) {
@@ -342,7 +341,7 @@ public class CatLock.MainWindow : GLib.Object
                         print(@"[other: $((string)buf)]\n"); 
                     }
 
-                    if (num != 0 && !buf[0].iscntrl() && (len + num < 256)) {
+                    if (num != 0 && !buf[0].iscntrl() && (len + num < BUFLEN)) {
                         passwd = passwd + (string)buf;
                         len += num;
                         if (pline.length < pass_num_show) { 
@@ -350,7 +349,7 @@ public class CatLock.MainWindow : GLib.Object
                         }
                         draw();
                     }
-                    else if (len + num >= 256) {
+                    else if (len + num >= BUFLEN) {
                         passwd = "";
                         display.bell(100);
                         if (parms.verbosity > 1) { print("(terminated at 255 chars)"); }
@@ -431,9 +430,8 @@ public class CatLock.MainWindow : GLib.Object
     /**
      * Generate the required font names
      */
-     public void generateFontNames(string name) {
+     public void set_font_name(string name) {
         parms.font = name;
-
         fontname_08 = parms.font + "-8";
         fontname_16 = parms.font + "-16";
         fontname_24 = parms.font + "-24";
@@ -505,7 +503,8 @@ public class CatLock.MainWindow : GLib.Object
         switch (state) {
     
         case ApplicationDate:
-            int row = 600;
+            int row = 600 - (today_is.length*20 + tomorrow_is.length*20);
+            if (row < 0) row = 0;
 
             drawable.draw_string(&color, font_64, 40, row, tline, tlen);
             drawable.draw_string(&color, font_32, 40, row+70, dline, dlen);
@@ -515,6 +514,11 @@ public class CatLock.MainWindow : GLib.Object
             foreach (var s in today_is) {
                 hcount += 1;
                 drawable.draw_string(&color, font_16, 40, row + 90+(hcount*20), s, s.length);
+            }
+
+            if (tomorrow_is.length > 0) {
+                hcount += 1;
+                drawable.draw_string(&color, font_16, 40, row + 90+(hcount*20), "Tomorrow:", 9);
             }
     
             foreach (var s in tomorrow_is) {

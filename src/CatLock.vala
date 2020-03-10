@@ -29,8 +29,8 @@
     public enum ApplicationState { ApplicationDate, ApplicationPassword }
     public enum ApplicationEvent { ApplicationInit, ApplicationKeyPress, ApplicationEscape, ApplicationTimeout }
 
-    public const string APPLICATION_ID =   "com.github.darkoverlordofdata.CatLock";
-    public const string APPLICATION_URI = "/com/github/darkoverlordofdata/CatLock";
+    public const string APPLICATION_ID =   "com.github.darkoverlordofdata.catlock";
+    public const string APPLICATION_URI = "/com/github/darkoverlordofdata/catlock";
     public const string DATADIR = Config.DATADIR;
     public const string PKGDATADIR = Config.PKG_DATADIR;
     public const string GETTEXT_PACKAGE = Config.GETTEXT_PACKAGE;
@@ -42,7 +42,5 @@
     public const string APP_NAME = "CatLock";
     public const string VERSION_INFO = "Dev";
     public const string RELEASE = "dev";
-    public const string ICS = "orage/orage.ics";
-    public const int BUFLEN = 256;
 
 }
