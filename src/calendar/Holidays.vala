@@ -104,17 +104,21 @@ public class CatLock.Holidays : Object
 			* only consider entries with a YEARLY recurance rule
 			*/
 			if (cal.events[i].rrule != null) {
-				if (cal.events[i].rrule.index_of("FREQ=YEARLY;") > 0)
+				if (cal.events[i].rrule.index_of("FREQ=YEARLY") > 0)
 					count += 1;
 			}
 		}
 
+		//  print(@"cal.events.length = $(cal.events.length)\n");
 		for (int i=0; i<cal.events.length; i++) {
 			if (cal.events[i].rrule != null) {
+				//  print(@"RULE:$(cal.events[i].rrule)\n");
 				rr = new Rule(cal.events[i].rrule);
+				//  print(@" $(cal.events[i].dtstart) $(cal.events[i].rrule)\n");
 				if ("YEARLY" != rr.freq) continue;
 
 				int dtstart = int.parse(cal.events[i].dtstart);
+				//  print(@"$(rr.to_string())\n");
 
 				if (rr.byday != "" && rr.bymonth != "") {
 					/**
@@ -148,6 +152,7 @@ public class CatLock.Holidays : Object
 						*/
 						while (searching) {
 			
+							//  print(@"Look for last $dayname day of month\n");
 							int last_day = last_dayofmonth(yyyy, mm);
 							int offset = "SU.MO.TU.WE.TH.FR.SA.".index_of(dayname);
 							if (offset < 0) break;
@@ -161,6 +166,7 @@ public class CatLock.Holidays : Object
 						* Look for Nth Monday
 						*/
 						while (searching) {
+							//  print(@"Look for Nth $dayname day of month\n");
 			
 							int start_day = dayofweek(yyyy/10000, mm, 1);
 							int offset = "SU.MO.TU.WE.TH.FR.SA.".index_of(dayname);

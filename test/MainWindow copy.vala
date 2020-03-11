@@ -122,10 +122,6 @@ public class CatLock.MainWindow : GLib.Object
 
             if (FileUtils.test(path, FileTest.EXISTS)) {
                 holidays = new Holidays.from_path(path);
-
-                //  holidays.list.foreach((entry) => {
-                //      print(@"$(entry.date) $(entry.description)\n");
-                //  });
     
                 //  holidays.today = 20200310;
                 //  holidays.tomorrow = 20200311;
@@ -265,6 +261,9 @@ public class CatLock.MainWindow : GLib.Object
         display.map_window(window);
     }
 
+    void load_image() {
+        
+    }
 
     /**
      * Run
@@ -284,14 +283,17 @@ public class CatLock.MainWindow : GLib.Object
         while (running) {
             if (rollover) {
                 var dt = new DateTime.now_local();
-                if (dt.get_hour() == 0 && dt.get_minute() > 2) {
+                if (dt.get_hour() == 1 && dt.get_minute() > 2) {
                     /*
-                     * if running after 12:02 am and started on the previous day then restart
+                     * Load new picture
                      */
-                    Process.spawn_command_line_async("com.github.darkoverlordofdata.catlock --calendar");
-                    Process.exit(0);
+                    load_image();
+                    rollover = false;
+                    today = get_today();
                 }
+
             }
+
             run_loop();
         }
     }
@@ -421,11 +423,11 @@ public class CatLock.MainWindow : GLib.Object
         }
 
         /* 
-         * sleep for .01 second to allow 
-         * capture of the x11 keyboard events 
+         * sleep for 1/20 second to allow 
+         * capture of the x11 events 
          */
-        Thread.usleep(10000);
-        if (ticks++ >= 100) {
+        Thread.usleep(50000);
+        if (ticks++ >= 20) {
             // 1.0 fps
             ticks = 0;
             draw();
@@ -551,17 +553,17 @@ public class CatLock.MainWindow : GLib.Object
 
             foreach (var s in today_is) {
                 hcount += 1;
-                drawable.draw_string(&color, font_16, 60, row + 90+(hcount*row_size), s, s.length);
+                drawable.draw_string(&color, font_16, 40, row + 90+(hcount*row_size), s, s.length);
             }
 
             if (tomorrow_is.length > 0) {
                 hcount += 1;
-                drawable.draw_string(&color, font_16, 60, row + 90+(hcount*row_size), "[Tomorrow]", 10);
+                drawable.draw_string(&color, font_16, 40, row + 90+(hcount*row_size), "Tomorrow:", 9);
             }
     
             foreach (var s in tomorrow_is) {
                 hcount += 1;
-                drawable.draw_string(&color, font_16, 60, row + 90+(hcount*row_size), s, s.length);
+                drawable.draw_string(&color, font_16, 40, row + 90+(hcount*row_size), s, s.length);
             }
             
             break;

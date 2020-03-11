@@ -39,6 +39,8 @@ executable(
     'src/CatLock.vala',
     'src/Parameters.vala',
     'src/MainWindow.vala',
+    # 'src/Display.vala',
+    # 'src/Panel.vala',
     'src/calendar/Calendar.vala',
     'src/calendar/CalendarNode.vala',
     'src/calendar/Event.vala',

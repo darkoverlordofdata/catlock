@@ -87,4 +87,3 @@ this will de-couple the 2 programs allowing catlock to work seamlessly with any 
 
 ![Screenshot](https://github.com/darkoverlordofdata/catlock/raw/master/assets/2.png "Screenshot")
 
-

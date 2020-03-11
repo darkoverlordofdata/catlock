@@ -24,6 +24,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
+public errordomain CalendarException {
+	InvalidCalendarNode	 
+}
+
 /**
  * Load calendar from an ICS file 
  */
@@ -82,6 +86,7 @@ public class CatLock.Calendar : Object
 		int level = 0;
 
 		for (int i=0; i<count; i++) {
+			//  print(@"$i $(nodes[i])\n");
 
 			if ("BEGIN" == nodes[i].name) {
 				level++;
@@ -173,7 +178,7 @@ public class CatLock.Calendar : Object
 					}
 					// "RRULE",            //:FREQ=YEARLY;COUNT=5
 					else if ("RRULE" == nodes[i].name) {
-						event.rrule = nodes[i].value;
+						event.rrule = nodes[i].param;
 					}
 					// "CATEGORIES",       //:Holidays
 					else if ("CATEGORIES" == nodes[i].name) {

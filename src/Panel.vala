@@ -24,60 +24,41 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
+using X;
+using Imlib2;
+using Config;
+
 /**
- * Calendar from an ICS file 
- */
-
-class CatLock.CalendarNode : Object
+* XWindow wrapper
+*/
+public class CatLock.Panel : GLib.Object 
 {
-	public string name = "";
-	public string param = "";
-	public string value = "";
+	X.Window window;        // top level window
 
+	/**
+	*/
+	public Panel(Display app, string imgfn) 
+	{
+		var image = Imlib2.Image.create_from_file(imgfn);
+		image.set_context();
+		int width = Imlib2.image_get_width();
+		int height = Imlib2.image_get_height();
 
-	public CalendarNode(string str) {
-		//  print(@"[$str]\n");
-
-		var c = (char*)str;
-		var index = -1;
-		for (var i=0; i<str.length; i++) {
-			if (c[i] == ';' || c[i] == ':') {
-				index = i;
-				break;
-			}
+		if (app.panels.length > 1) {
+			window = X.create_simple_window(app.display, app.window, 0, 0, width, height,
+				0, app.fg.pixel, app.bg.pixel);
 		}
-		if (index < 0) throw new CalendarException.InvalidCalendarNode(str);
-		name = str.substring(0, index);
-		if (c[index] == ':') index += 1;
+		else window = app.window;
 
-		
-		var a = str.substring(index).split(":");
-		if (a.length == 1) {
-			if (a[0].index_of("=") > 0) {
-				value = "";
-				param = a[0];
-			}
-			else {
-				value = a[0];
-				param = "";
-			} 
-		}
-		else {
-			value = a[1];
-			if (a[0].index_of("=") == 0) {
-				param = a[0].substring(1);
-			} 
-			else {
-				param = a[0];
-			}
-		}
+		/* Set the top level background image */
+		var pixm = X.create_pixmap(app.display, window, width, height, app.depth);
+		Imlib2.context_set_drawable(pixm);
+		Imlib2.render_image_on_drawable(0, 0);
+
+		X.set_window_background_pixmap(app.display, window, pixm);
+		X.free_pixmap(app.display, pixm);
+
 	}
 
-	public string to_string() {
-		return """CalendarNode:
-	name = %s
-	value = %s
-	param = %s
-""".printf(name, value, param);		
-	}
 }
+ 

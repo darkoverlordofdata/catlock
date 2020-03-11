@@ -37,6 +37,9 @@ public class CatLock.Rule : Object
 
 	public Rule(string str) {
 		array = str.split_set("=;");
+		//  print(@"$str\n");
+		//  foreach (string s in array) print(@"$s  ");
+		//  print("\n");
 
 		for (int i = 0; i<array.length; i++) {
 			/* FREQ Repeat (Yearly, Monthly, Weekly, Daily, Hourly) */
