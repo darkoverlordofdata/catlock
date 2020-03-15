@@ -44,9 +44,7 @@ sudo ninja -C build install
 sudo chmod 755 /usr/local/bin/com.github.darkoverlordofdata.catlock
 sudo chmod u+s /usr/local/bin/com.github.darkoverlordofdata.catlock
 
-glib-compile-schemas /usr/local/share/glib-2.0/schemas
-
-/usr/local/share/glib-2.0/schemas/com.github.darkoverlordofdata.catlock.gschema.xml
+sudo glib-compile-schemas /usr/local/share/glib-2.0/schemas
 
 ```
 
