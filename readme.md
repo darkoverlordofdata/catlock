@@ -38,7 +38,7 @@ Bal has 'paw-tested' catlock, and has not been able to do anything evil to my co
 ## install:
 
 ```bash
-meson build --prefix=/usr
+meson build --prefix=/usr/local
 ninja -C build
 sudo ninja -C build install
 sudo chmod 755 /usr/local/bin/com.github.darkoverlordofdata.catlock
@@ -85,3 +85,5 @@ this will de-couple the 2 programs allowing catlock to work seamlessly with any 
 
 ![Screenshot](https://github.com/darkoverlordofdata/catlock/raw/master/assets/2.png "Screenshot")
 
+sudo cp ./data/com.github.darkoverlordofdata.catlock.gschema.xml /usr/local/share/glib-2.0/schemas
+sudo glib-compile-schemas /usr/local/share/glib-2.0/schemas

@@ -62,6 +62,7 @@ public class CatLock.MainWindow : GLib.Object
     int screen;             // screen of display
     int width;              // width of screen
     int height;             // height of screen
+    int offset;
 
     /* Application values */
     Parameters parms;
@@ -108,6 +109,7 @@ public class CatLock.MainWindow : GLib.Object
      */
     public MainWindow(Parameters parms) 
     {
+
         this.parms = parms;
         var now = time_t();
 		var t = GLib.Time.local(now);
@@ -177,6 +179,7 @@ public class CatLock.MainWindow : GLib.Object
         width = display.width(screen);
         height = display.height(screen);
         cm = display.default_color_map(screen);
+
 
         X.Color bg = { 0, 0, 0, 0 };              // black
         X.Color fg = { 0, 65535, 65535, 65535 };  // white
@@ -468,14 +471,43 @@ public class CatLock.MainWindow : GLib.Object
      * Generate the required font names
      */
      public void set_font_name(string name) {
-        parms.font = name;
-        fontname_08 = parms.font + "-8";
-        fontname_16 = parms.font + "-16";
-        fontname_24 = parms.font + "-24";
-        fontname_32 = parms.font + "-32";
-        fontname_64 = parms.font + "-64";
-    }
 
+        parms.font = name;
+        switch (width*10000+height)
+        {
+            case 13660768:
+                offset = 0;
+                fontname_08 = parms.font + "-8";
+                fontname_16 = parms.font + "-16";
+                fontname_24 = parms.font + "-24";
+                fontname_32 = parms.font + "-32";
+                fontname_64 = parms.font + "-64";
+                break;
+
+            case 19201080:
+                offset = 12;
+                fontname_08 = parms.font + "-12";
+                fontname_16 = parms.font + "-24";
+                fontname_24 = parms.font + "-36";
+                fontname_32 = parms.font + "-48";
+                fontname_64 = parms.font + "-96";
+                break;
+
+            default:
+                offset = 0;
+                fontname_08 = parms.font + "-8";
+                fontname_16 = parms.font + "-16";
+                fontname_24 = parms.font + "-24";
+                fontname_32 = parms.font + "-32";
+                fontname_64 = parms.font + "-64";
+                break;
+
+        }
+    }
+    //1366x768
+    // 1920X1080
+
+    //
     /**
      * Get images to load
      */
@@ -542,6 +574,7 @@ public class CatLock.MainWindow : GLib.Object
         case ApplicationDate:
             int row_size = 22;
             int row = 600 - (today_is.length*row_size + tomorrow_is.length*row_size);
+            row =(int) ((float)row * ((float)width/1366.0f));
             if (row < 0) row = 0;
 
             drawable.draw_string(&color, font_64, 40, row, tline, tlen);
@@ -570,7 +603,7 @@ public class CatLock.MainWindow : GLib.Object
             drawable.draw_string(&color, font_24, c,  480, (char *)uline, uline.length);
             drawable.draw_rect(&color, c1-1, 529, 302, 32);
             drawable.draw_rect(&bgcolor, c1, 530, 300, 30);
-            drawable.draw_string(&color, font_24,  c1, 560, (char *)pline, pline.length);
+            drawable.draw_string(&color, font_24,  c1+offset, 560+offset, (char *)pline, pline.length);
             drawable.draw_string(&color, font_08,  c2, 660, (char *)instruc, instruc.length);
             break;
     

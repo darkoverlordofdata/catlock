@@ -8,8 +8,10 @@
             "name": "Debug",
             "type": "gdb",
             "request": "launch",
-            "target": "${workspaceFolder}/build/meson-out/com.github.darkoverlordofdata.catlock",
-            "arguments": "--verbosity=2 --calendar",
+            // "target": "${workspaceFolder}/build/meson-out/com.github.darkoverlordofdata.catlock",
+            // "arguments": "--verbosity=2 --calendar",
+            "target": "${workspaceFolder}/build/com.github.darkoverlordofdata.catlock",
+            "arguments": "",
             "cwd": "${workspaceRoot}",
             "valuesFormatting": "parseText"
         }
