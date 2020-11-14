@@ -38,7 +38,7 @@ Bal has 'paw-tested' catlock, and has not been able to do anything evil to my co
 ## install:
 
 ```bash
-meson build --prefix=/usr/local
+(meson build --prefix=/usr/local)
 ninja -C build
 sudo ninja -C build install
 sudo chmod 755 /usr/local/bin/com.github.darkoverlordofdata.catlock
@@ -48,7 +48,18 @@ sudo glib-compile-schemas /usr/local/share/glib-2.0/schemas
 
 ```
 
-Then add to .config/openbox/rc.xml
+## Enable
+
+Menu->Preferences->Keyboard_Shortcuts: 
+    Disable LockScreen
+    Add 
+        Name: CatLock
+        Command: com.github.darkoverlordofdata.catlock
+
+        Mod4+L
+
+### openbox
+Add to .config/openbox/rc.xml
 ```
 <keybind key="W-l">
     <action name="Execute">
@@ -61,11 +72,6 @@ Then add to .config/openbox/rc.xml
 
     com.github.darkoverlordofdata.catlock -a <user>
 
-#### return key
-```bash
-[darko@NomadBSD:~/GitHub/catlock] com.github.darkoverlordofdata.catlock
-Segmentation fault
-```
 
 ## todo
 
@@ -87,3 +93,9 @@ this will de-couple the 2 programs allowing catlock to work seamlessly with any 
 
 sudo cp ./data/com.github.darkoverlordofdata.catlock.gschema.xml /usr/local/share/glib-2.0/schemas
 sudo glib-compile-schemas /usr/local/share/glib-2.0/schemas
+
+
+### bsd errata
+
+dependency('X11') s.b. dependency('x11'),
+

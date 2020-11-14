@@ -66,7 +66,7 @@ executable(
     dependencies: [
         dependency('gio-2.0'),
         dependency('gobject-2.0'),
-        dependency('X11'),
+        dependency('x11'),
         dependency('imlib2'),
         meson.get_compiler('c').find_library('m', required: false)
     ],
