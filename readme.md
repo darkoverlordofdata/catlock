@@ -99,3 +99,7 @@ sudo glib-compile-schemas /usr/local/share/glib-2.0/schemas
 
 dependency('X11') s.b. dependency('x11'),
 
+
+
+https://github.com/pypa/manylinux/issues/305
+libxcrypt-compat

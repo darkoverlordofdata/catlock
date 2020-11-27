@@ -1,5 +1,5 @@
 # project name and programming language
-project('com.github.darkoverlordofdata.catlock', ['vala', 'c'], version: '0.0.1')
+project('com.github.darkoverlordofdata.catlock', ['vala', 'c'], version: '0.0.3')
 
 
 # Set our translation domain
@@ -55,6 +55,7 @@ executable(
     c_args: [
       '-include', 'config.h',
       '-I/usr/local/include/freetype2',
+      '-I/usr/include/freetype2', # added for Fedora 33-Mate
       '-w', 
       '-DGETTEXT_PACKAGE="' + meson.project_name() + '"'
     ],

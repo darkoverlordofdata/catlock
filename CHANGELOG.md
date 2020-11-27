@@ -10,3 +10,7 @@
     * don't fail if notification service is not available
     * use pcmanfm when session is LXDE-pi
 
+* 0.3 - 11/27/2020 - bug fixes
+
+    * update password input when backspace is pressed
+    * fedora 33 mate - issues with libxcrypt. Use param --secret when crypt is not working

@@ -35,6 +35,7 @@ public class Parameters
 	public static string 	_as_user = "";
 	public static string 	_font = "bitstream vera sans";
 	public static string	_theme = "badabing";
+	public static string	_secret = null;
 
 	const OptionEntry[] options = {
 		{ "verbosity", 	0, 0, OptionArg.INT, 	ref _verbosity, 	"verbose level", null },
@@ -44,6 +45,7 @@ public class Parameters
 		{ "as_user", 	0, 0, OptionArg.STRING, ref _as_user, 		"as user", null },
 		{ "font", 		0, 0, OptionArg.STRING, ref _font, 			"font", null },
 		{ "theme", 		0, 0, OptionArg.STRING, ref _theme, 		"theme", null },
+		{ "secret",		0, 0, OptionArg.STRING, ref _secret, 		"secret", null},
 		{ null }
 	};
 
@@ -54,6 +56,7 @@ public class Parameters
 	public string as_user;
 	public string font;
 	public string theme;
+	public string secret;
 	/**
 	 * Command line
 	 *	 
@@ -100,6 +103,8 @@ public class Parameters
 		as_user 	= _as_user;
 		font 		= _font;
 		theme 		= _theme;
+		secret		= _secret;
+		
         if (verbosity > 0) {
 			print(@"verbosity 	= $verbosity\n");
 			print(@"scrot 		= $scrot\n");

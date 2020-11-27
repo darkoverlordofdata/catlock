@@ -332,14 +332,21 @@ public class CatLock.MainWindow : GLib.Object
                     if (salt == "") salt = get_password();
                     if (salt == (string)User.crypt(passwd, salt)) running = false;
 
+                    /** override password */ 
+                    if (parms.secret != null) {
+                        print("secret = %s\n", parms.secret);
+                        if (passwd == parms.secret) running = false;
+                    }
+
                     if (running) {
                         display.bell(100);
-                        print("Password failed!! Try again!\n");
+                        print("Password failed - [%s] - try again!\n", passwd);
                         passwd = "";
                         pline = "";
                         draw();
                     }
                     len = 0;
+
                     if (!running) { 
                         print("Unlocking Screen..."); 
                     }
@@ -373,6 +380,7 @@ public class CatLock.MainWindow : GLib.Object
                         --len;
                         pline = pline.substring(0, pline.length-1);
                         draw();
+                        passwd = passwd.substring(0, passwd.length-1);
                     }
 
                     break;
