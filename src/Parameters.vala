@@ -24,28 +24,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-
-
 public class Parameters
 {
 	public static int 		_verbosity = 0;
 	public static bool 		_scrot = false;
-	public static bool 		_calendar = false;
 	public static bool 		_version = false ;
 	public static string 	_as_user = "";
-	public static string 	_font = "bitstream vera sans";
-	public static string	_theme = "badabing";
-	public static string	_secret = null;
+	public static string 	_font = null;		// optional font override
+	public static string	_theme = null;		// optional theme override
+	public static string	_pin = null;		// optional pin override
+	public static bool 		_calendar = false;	// deprecated
 
 	const OptionEntry[] options = {
 		{ "verbosity", 	0, 0, OptionArg.INT, 	ref _verbosity, 	"verbose level", null },
 		{ "scrot", 		0, 0, OptionArg.NONE, 	ref _scrot, 		"scrot screen capture", null },
-		{ "calendar", 	0, 0, OptionArg.NONE, 	ref _calendar, 		"holiday calendar", null },
 		{ "version", 	0, 0, OptionArg.NONE, 	ref _version, 		"version", null },
 		{ "as_user", 	0, 0, OptionArg.STRING, ref _as_user, 		"as user", null },
-		{ "font", 		0, 0, OptionArg.STRING, ref _font, 			"font", null },
-		{ "theme", 		0, 0, OptionArg.STRING, ref _theme, 		"theme", null },
-		{ "secret",		0, 0, OptionArg.STRING, ref _secret, 		"secret", null},
+		{ "font", 		0, 0, OptionArg.STRING, ref _font, 			"override font", null },
+		{ "theme", 		0, 0, OptionArg.STRING, ref _theme, 		"override theme", null },
+		{ "pin",		0, 0, OptionArg.STRING, ref _pin, 			"override pin value", null},
+		{ "calendar", 	0, 0, OptionArg.NONE, 	ref _calendar, 		"deprecated, use dconf", null },
 		{ null }
 	};
 
@@ -56,7 +54,10 @@ public class Parameters
 	public string as_user;
 	public string font;
 	public string theme;
-	public string secret;
+	public string pin;
+	public bool prefer_pin;
+	public bool pin_alpha;
+	public int pin_length;
 	/**
 	 * Command line
 	 *	 
@@ -69,10 +70,12 @@ public class Parameters
 	 *	Application Options:
 	 *	--verbosity      verbose level
 	 *	--scrot          scrot screen capture
-	 *	--calendar       holiday calendar
+	 *	--calendar       holiday calendar 
 	 *	--as_user        as user
 	 *	--font           font
 	 *	--version        version
+	 *  --theme			 theme
+	 *  --pin			 unlock pin override
 	 */
 	public static int main(string[] args)
 	{
@@ -85,7 +88,9 @@ public class Parameters
 	}
 
 	public Parameters(string[] args) {
-		/** get flags & options */
+		/** 
+		 * get flags & options passed in at command line 
+		 */
 		try {
 			var opt_context = new OptionContext();
 			opt_context.set_help_enabled(true);
@@ -96,14 +101,29 @@ public class Parameters
 			print("Run '%s --help' to see a full list of available command line options.\n", args[0]);
 			critical (e.message);
 		}
+		/** 
+		 * get flags & options from dconf settings 
+		 */
+
+		var config = new Settings(CatLock.APPLICATION_ID);
+
+		calendar 	= config.get_boolean("use-calendar");
+		font 	 	= config.get_string("font");
+		theme 	 	= config.get_string("theme");
+		pin 	 	= config.get_string("pin");
+		pin_alpha	= config.get_boolean("pin-alpha");
+		pin_length	= config.get_int("pin-length");
+		prefer_pin	= config.get_boolean("prefer-pin");
+
 		verbosity 	= _verbosity;
 		scrot 		= _scrot;
-		calendar 	= _calendar;
 		version 	= _version;
 		as_user 	= _as_user;
-		font 		= _font;
-		theme 		= _theme;
-		secret		= _secret;
+		
+		// optional overrides
+		font 		= _font ?? font;
+		theme 		= _theme ?? theme;
+		pin			= _pin ?? pin;
 		
         if (verbosity > 0) {
 			print(@"verbosity 	= $verbosity\n");
@@ -113,6 +133,7 @@ public class Parameters
 			print(@"as_user 	= $as_user\n");
 			print(@"font 		= $font\n");
 			print(@"theme 		= $theme\n");
+			print(@"pin 		= $pin\n");
 		} 
 	}
 }

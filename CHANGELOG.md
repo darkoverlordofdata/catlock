@@ -14,3 +14,10 @@
 
     * update password input when backspace is pressed
     * fedora 33 mate - issues with libxcrypt. Use param --secret when crypt is not working
+
+* 0.4 - 12/12/2020
+
+    * prefer PIN rather than password
+    * store preferences in dconf
+    * re-write key input loop
+    * re-write imlib2.vapi to remove oop style bindings

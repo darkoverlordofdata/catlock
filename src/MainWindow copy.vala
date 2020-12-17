@@ -80,6 +80,7 @@ public class CatLock.MainWindow : GLib.Object
     string boximgfn = "";
     char tline[BUFLEN];
     char dline[BUFLEN];
+    char buf[BUFLEN];
     string[] today_is;
     string[] tomorrow_is;
     int today = 0;
@@ -87,6 +88,7 @@ public class CatLock.MainWindow : GLib.Object
     int ticks = 0;
     int inactive = 0;
     const int timeout = 1000;
+    const int pass_num_show = 32;
     uint len;
     ulong ksym;
     bool running = false;
@@ -123,11 +125,9 @@ public class CatLock.MainWindow : GLib.Object
             if (FileUtils.test(path, FileTest.EXISTS)) {
                 holidays = new Holidays.from_path(path);
 
-                if (parm.verbosity > 2) {
-                    holidays.list.foreach((entry) => {
-                        print(@"$(entry.date) $(entry.description)\n");
-                    });
-                }
+                //  holidays.list.foreach((entry) => {
+                //      print(@"$(entry.date) $(entry.description)\n");
+                //  });
     
                 holidays.today = 20200310;
                 holidays.tomorrow = 20200311;
@@ -135,17 +135,15 @@ public class CatLock.MainWindow : GLib.Object
                 today_is = holidays.today_is();
                 tomorrow_is = holidays.tomorrow_is();
 
-                if (parm.verbosity > 2) {
-                    print("Today:\n");
-                    foreach (var s in today_is) {
-                        print(@"$s\n");
-                    }
-            
-                    print("Tomorrow:\n");
-                    foreach (var s in tomorrow_is) {
-                        print(@"$s\n");
-                    }
-                }
+                //  print("Today:\n");
+                //  foreach (var s in today_is) {
+                //      print(@"$s\n");
+                //  }
+        
+                //  print("Tomorrow:\n");
+                //  foreach (var s in tomorrow_is) {
+                //      print(@"$s\n");
+                //  }
             }
 
     
@@ -295,27 +293,21 @@ public class CatLock.MainWindow : GLib.Object
         while (running) {
             /**
                 this 'works' but is insecure. It should just reload and redisplay the image.
-                I should pass the current pid and kill that from the 2nd process
-                Or use a dbus message, and from badabing as well to signal rollover? 
-            */
-            if (rollover) {
-                var dt = new DateTime.now_local();
-                var success = false;
+                
+                Would this would be better done as a dbus message from badabing? 
 
-                if (dt.get_hour() == 0 && dt.get_minute() > 2) {
-                    /*
-                     * if running after 12:02 am and started on the previous day then restart
-                     */
-                    try {
-                        success = Process.spawn_command_line_async(@"com.github.darkoverlordofdata.catlock");
-                    }
-                    catch (SpawnError e) {
-                        print ("Error: %s\n", e.message);
-                        success = false;
-                    }
-                    if (success) Process.exit(0);
-                }
-            }
+
+             */
+            //  if (rollover) {
+            //      var dt = new DateTime.now_local();
+            //      if (dt.get_hour() == 0 && dt.get_minute() > 2) {
+            //          /*
+            //           * if running after 12:02 am and started on the previous day then restart
+            //           */
+            //          Process.spawn_command_line_async("com.github.darkoverlordofdata.catlock --calendar");
+            //          Process.exit(0);
+            //      }
+            //  }
             run_loop();
         }
     }
@@ -325,7 +317,12 @@ public class CatLock.MainWindow : GLib.Object
      */
     public void run_loop() {
 
-        if (ev.type == X.EventType.KeyPress) {
+        int num;
+
+        if (ev.type == X.EventType.KeyRelease) {
+            buf[0] = 0;
+        }
+        else if (ev.type == X.EventType.KeyPress) {
             processEvent(ApplicationKeyPress);
             inactive = timeout;
             if (parms.scrot) {
@@ -335,140 +332,113 @@ public class CatLock.MainWindow : GLib.Object
                 }
                 catch (GLib.SpawnError ex) { }
             }
+            //  buf[0] = 0;
+            //  num = X.lookup_string(&ev.xkey, buf, BUFLEN, &ksym, null);
+            //  buf[num] = 0;
 
             ksym = display.keycode_to_keysym((uchar)ev.xkey.keycode, 0);
+            num = 1;
+            buf[0] = (char)ksym;
+            buf[num] = 0;
+
+            //  print("ksym) %lx - %lx\n", ksym, k1);
+
 
             switch(ksym) {
-            /**
-             * Return
-             */
-            case X.K_Return:
-                if (parms.verbosity > 1) {  
-                    print("[return]\n"); 
-                }
-
-                if (parms.prefer_pin) {
-                    print(@"pin = $(parms.pin)\n");
-                    if (passwd == parms.pin) running = false;
-                }
-                else { // only works with libcrypt.so.1
-                    print("before get password\n");
-                    if (salt == "") salt = get_password();
-                    print(@"salt = [$salt]\n");
-
-                    print("after get password\n");
-
-                    char* ss = User.crypt(passwd, salt);
-                    if (ss == null) {
-                        print("crypt returns null\n");
-                        running = false;
+                case X.K_Return:
+                    if (parms.verbosity > 1) { 
+                        print("[return]\n"); 
                     }
-                    else
-                    if (salt == (string)User.crypt(passwd, salt)) running = false;
-                }
 
-                if (running) {
-                    display.bell(100);
-                    print("PIN failed - [%s] - try again!\n", passwd);
-                    passwd = "";
-                    pline = "";
-                    draw();
-                }
-                len = 0;
-
-                if (!running) { 
-                    print("Unlocking Screen..."); 
-                }
-
-                break;
-
-            /**
-             * Escape
-             */
-            case X.K_Escape:
-                if (parms.verbosity > 1) { 
-                    print("[escape]\n"); 
-                }
-
-                //  running = false;
-                if (state == ApplicationDate) break;
-
-                if (first) {
-                    first = false;
-                    break;
-                }
-                len = 0;
-                pline = "";
-                processEvent(ApplicationEscape);
-
-                break;
-
-            /**
-             * Backspace
-             */
-            case X.K_BackSpace:
-                if (parms.verbosity > 1) { 
-                    print("[backspace]\n"); 
-                }
-
-                len =    (len > 0) ? --len : 0;
-                passwd = (len > 0) ? passwd.substring(0, passwd.length-1) : "";
-                pline =  (len > 0) ? pline.substring(0, pline.length-1) : "";
-                draw();
-
-                break;
-
-            /**
-             * Other
-             */
-            default: 
-                /**
-                 * Verify that it's a valid char
-                 * between Space and DEL
-                 */ 
-                if (ksym <= 0x1f || ksym >= 0x7f) break;
-
-                if (parms.prefer_pin) {
-                    if (!parms.pin_alpha) {
-                        // then numeric only!
-                        if (ksym < 0x30 || ksym > 0x39) break;
+                    if (parms.pin == null) {
+                        if (salt == "") salt = get_password();
+                        if (salt == (string)User.crypt(passwd, salt)) running = false;
                     }
-                }
-
-                var max_length = parms.prefer_pin ? parms.pin_length : 18;
-
-                string strbuf = ((char)ksym).to_string();
-                if (parms.verbosity > 1) { 
-                    print(@"[other: $strbuf | $ksym]\n"); 
-                }
-
-                if ((len  < max_length)) {
-                    passwd = passwd + strbuf;
-                    len += 1;
-                    pline = pline + "*"; 
-                    draw();
-                    if (parms.prefer_pin) {
-                        print(@"pin = $(parms.pin)\n");
+                    else 
+                    {
+                        print("pin = %s\n", parms.pin);
                         if (passwd == parms.pin) running = false;
                     }
-    
-                    else {
-                        print("failed : %s\n", passwd);
+
+                    if (running) {
+                        display.bell(100);
+                        print("PIN failed - [%s] - try again!\n", passwd);
+                        passwd = "";
+                        pline = "";
+                        draw();
+                    }
+                    len = 0;
+
+                    if (!running) { 
+                        print("Unlocking Screen..."); 
                     }
 
+                    break;
 
-                }
-                else  {
-                    passwd = "";
-                    display.bell(100);
-                    if (parms.verbosity > 1) { print(@"(terminated at $(max_length) chars)"); }
-                    print("Specified pin is *unreasonably* long!! Try again!\n");
+                case X.K_Escape:
+                    if (parms.verbosity > 1) { 
+                        print("[escape]\n"); 
+                    }
+
+                    //  running = false;
+                    if (state == ApplicationDate) break;
+
+                    if (first) {
+                        first = false;
+                        break;
+                    }
                     len = 0;
                     pline = "";
-                    draw();
-                }
+                    processEvent(ApplicationEscape);
 
-                break;
+                    break;
+
+                case X.K_BackSpace:
+                    if (parms.verbosity > 1) { 
+                        print("[backspace]\n"); 
+                    }
+
+                    if (len>0) {
+                        --len;
+                        pline = pline.substring(0, pline.length-1);
+                        draw();
+                        passwd = passwd.substring(0, passwd.length-1);
+                    }
+
+                    break;
+
+                default: 
+                    if (parms.verbosity > 1) { 
+                        print(@"[other: $((string)buf)]\n"); 
+                    }
+
+                    if (num != 0 && !buf[0].iscntrl() && (len + num < BUFLEN)) {
+                        passwd = passwd + (string)buf;
+                        len += num;
+                        if (pline.length < pass_num_show) { 
+                            pline = pline + "*"; 
+                        }
+                        draw();
+                        if (parms.pin != null) {
+                            if (passwd == parms.pin) running = false;
+                        } 
+                        else {
+                            print("failed : %s\n", passwd);
+                        }
+    
+    
+                    }
+                    else if (len + num >= BUFLEN) {
+                        passwd = "";
+                        display.bell(100);
+                        if (parms.verbosity > 1) { print("(terminated at 255 chars)"); }
+                        print("Specified password is *unreasonably* long!! Try again!\n");
+                        len = 0;
+                        pline = "";
+                        draw();
+                    }
+
+                    break;
             }
             draw();
         }

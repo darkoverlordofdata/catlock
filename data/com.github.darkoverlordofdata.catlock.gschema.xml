@@ -1,11 +1,55 @@
 <schemalist>
   <schema id="com.github.darkoverlordofdata.catlock" path="/com/github/darkoverlordofdata/catlock/" gettext-domain="com.github.darkoverlordofdata.catlock">
 
-    <key name="calendar-path" type="s">
-      <default>"~/.local/share/orage/orage.ics"</default>
-      <summary>Calendar</summary>
-      <description>ICS Calendar data</description>
+    <key name="use-calendar" type="b">
+      <default>true</default>
+      <summary>Use Calendar</summary>
+      <description>Use ICS Calendar data</description>
     </key>
+
+
+    <key name="calendar-path" type="s">
+      <default>"~/.local/share/catlock/us_en.ics"</default>
+      <summary>Calendar</summary>
+      <description>Path to ICS Calendar data</description>
+    </key>
+
+    <key name="prefer-pin" type="b">
+      <default>true</default>
+      <summary>Prefer PIN</summary>
+      <description>Prefer using PIN rather than password</description>
+    </key>
+
+    <key name="pin" type="s">
+      <default>"999999"</default>
+      <summary>PIN</summary>
+      <description>PIN to unlock screen</description>
+    </key>
+
+    <key name="pin-length" type="i">
+      <default>6</default>
+      <summary>PIN Length</summary>
+      <description>PIN length</description>
+    </key>
+
+    <key name="pin-alpha" type="b">
+      <default>false</default>
+      <summary>PIN Alpha</summary>
+      <description>PIN allow alpha</description>
+    </key>
+
+    <key name="font" type="s">
+      <default>"bitstream vera sans"</default>
+      <summary>font</summary>
+      <description>Dispay font</description>
+    </key>
+
+    <key name="theme" type="s">
+      <default>"badabing"</default>
+      <summary>theme</summary>
+      <description>Theme folder name</description>
+    </key>
+
 
   </schema>
 </schemalist>

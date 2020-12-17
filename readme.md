@@ -37,26 +37,19 @@ Bal has 'paw-tested' catlock, and has not been able to do anything evil to my co
 
 ## install:
 
+sudo apt install libxpm-dev
+sudo apt install libimlib2-dev
+
 ```bash
 (meson build --prefix=/usr/local)
 ninja -C build
 sudo ninja -C build install
-sudo chmod 755 /usr/local/bin/com.github.darkoverlordofdata.catlock
-sudo chmod u+s /usr/local/bin/com.github.darkoverlordofdata.catlock
 
 sudo glib-compile-schemas /usr/local/share/glib-2.0/schemas
 
 ```
 
 ## Enable
-
-Menu->Preferences->Keyboard_Shortcuts: 
-    Disable LockScreen
-    Add 
-        Name: CatLock
-        Command: com.github.darkoverlordofdata.catlock
-
-        Mod4+L
 
 ### openbox
 Add to .config/openbox/rc.xml
@@ -68,21 +61,12 @@ Add to .config/openbox/rc.xml
 </keybind>
 ```
 
-### testing: 
+### mate
+in dconf editor, org.mate.marco.keybinding-commands
+command-1 mate-screensaver-command --lock
+dm-tool lock
 
-    com.github.darkoverlordofdata.catlock -a <user>
-
-
-## todo
-
-display today's holiday along with date. Example usage:
-
-    com.github.darkoverlordofdata.catlock --calendar orage
-
-load fonts from /usr/local/share/fonts using imlib2, removing the dependacy on Xft.
-
-use imlib2 for scaling and image blending so that functionality can be removed from badabing.
-this will de-couple the 2 programs allowing catlock to work seamlessly with any background picture source.
+com.github.darkoverlordofdata.catlock
 
 
 ![Screenshot](https://github.com/darkoverlordofdata/catlock/raw/master/assets/0.png "Screenshot")
@@ -94,12 +78,20 @@ this will de-couple the 2 programs allowing catlock to work seamlessly with any 
 sudo cp ./data/com.github.darkoverlordofdata.catlock.gschema.xml /usr/local/share/glib-2.0/schemas
 sudo glib-compile-schemas /usr/local/share/glib-2.0/schemas
 
+### PIN or Password?
+
+Catlock now prefers to use PIN for unlocking the screen. The default, 999999 can be reset in dconf at com/github/darkoverlordofdata/catlock/pin
+
+If you want to use password instead, you need to suid the executable:
+```
+sudo chmod 755 /usr/local/bin/com.github.darkoverlordofdata.catlock
+sudo chmod u+s /usr/local/bin/com.github.darkoverlordofdata.catlock
+```
+
+
 
 ### bsd errata
 
 dependency('X11') s.b. dependency('x11'),
 
 
-
-https://github.com/pypa/manylinux/issues/305
-libxcrypt-compat

@@ -25,65 +25,17 @@
  {
 
 	[Compact]
-	[CCode (cname = "Imlib_Border")]
-	public class Border {
-		public int left;
-		public int right;
-		public int top;
-		public int bottom;
-	}
+	[CCode (free_function = "")]
+	public class Imlib_Image { }
 
-	[Compact]
-	[CCode (cname = "Imlib_Color")]
-	public class Color {
-		public int r;
-		public int g;
-		public int b;
-	}
-
-	[Compact]
-	[CCode (cname = "Imlib_Color_Modifier")]
-	public class ColorModifier {
-		public int gamma;
-		public int brightness;
-		public int contrast;
-	}
-	
-	[Compact]
-	[CCode (cname = "Imlib_Image", free_function = "")]
-	public class Image {
-		public int rgb_width;
-		public int rgb_height;
-		public uchar* rgb_data;
-		public uchar* alpha_data;
-		public string filename;
-
-		[CCode (cname = "imlib_load_image")]
-		public static Image create_from_file(string filename);
-
-		[CCode (cname = "imlib_context_set_image")]
-		public void set_context();
-	}
-
-	[CCode (cname = "imlib_image_get_width")]
-	public static int image_get_width();
-
-	[CCode (cname = "imlib_image_get_height")]
-	public static int image_get_height();
-
-	[CCode (cname = "imlib_context_set_drawable")]
-	public static void context_set_drawable(X.Pixmap pixmap);
-
-	[CCode (cname = "imlib_render_image_on_drawable")]
-	public static void render_image_on_drawable(int x, int y);
-
-	[CCode (cname = "imlib_context_set_dither")]
-	public static void context_set_dither(int dither);
-
-	[CCode (cname = "imlib_context_set_display")]
-	public static void context_set_display(X.Display display);
-
-	[CCode (cname = "imlib_context_set_visual")]
-	public static void context_set_visual(X.Visual visual);
+	public static Imlib_Image imlib_load_image(string filename);
+	public static int imlib_context_set_image(Imlib_Image image);
+	public static int imlib_image_get_width();
+	public static int imlib_image_get_height();
+	public static void imlib_context_set_drawable(X.Pixmap pixmap);
+	public static void imlib_render_image_on_drawable(int x, int y);
+	public static void imlib_context_set_dither(int dither);
+	public static void imlib_context_set_display(X.Display display);
+	public static void imlib_context_set_visual(X.Visual visual);
 
  } 
