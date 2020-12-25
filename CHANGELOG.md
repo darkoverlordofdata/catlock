@@ -21,3 +21,8 @@
     * store preferences in dconf
     * re-write key input loop
     * re-write imlib2.vapi to remove oop style bindings
+    * fix time to GLib.Time.local(time_t())
+
+* 0.5 - 12/24/2020
+
+    * add descriptive text

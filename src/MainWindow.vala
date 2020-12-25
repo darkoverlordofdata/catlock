@@ -49,12 +49,14 @@ public class CatLock.MainWindow : GLib.Object
     X.FtColor color;        // freetype foreground color to draw
     X.FtColor bgcolor;      // freetype background color to draw
     X.FtFont * font_08;     // freetype small font
+    X.FtFont * font_12;     // freetype 12pt font
     X.FtFont * font_16;     // freetype medium font
     X.FtFont * font_24;     // freetype font for password
     X.FtFont * font_64;     // freetype font for time
     X.FtFont * font_32;     // freetype font for date
 
     string fontname_08 = "";
+    string fontname_12 = "";
     string fontname_16 = "";
     string fontname_24 = "";
     string fontname_64 = "";
@@ -63,6 +65,7 @@ public class CatLock.MainWindow : GLib.Object
     int width;              // width of screen
     int height;             // height of screen
     int offset;
+    int scrot_count = 1;
 
     /* Application values */
     Parameters parms;
@@ -78,11 +81,14 @@ public class CatLock.MainWindow : GLib.Object
     string pline = "";
     string imgfn = "";
     string boximgfn = "";
+    string textfn = "";
+    string copyright = "";
+    string title = "";
     char tline[BUFLEN];
     char dline[BUFLEN];
     string[] today_is;
     string[] tomorrow_is;
-    int today = 0;
+    int start_date = 0;
     int count = 0;
     int ticks = 0;
     int inactive = 0;
@@ -92,6 +98,7 @@ public class CatLock.MainWindow : GLib.Object
     bool running = false;
     bool first = true;
     bool rollover = false;
+    const int TIMEZONE_OFFSET = -(8*60*60);
 
     int get_today() {
         var now = time_t();
@@ -110,32 +117,42 @@ public class CatLock.MainWindow : GLib.Object
 
         this.parms = parms;
         var now = time_t();
-		var t = GLib.Time.local(now);
 		
-        today = get_today();
+        start_date = get_today(); // remember what day we started on
         
         if (parms.calendar) {
+
 
             var config = new Settings(APPLICATION_ID);
             var ics = config.get_string("calendar-path");
             var path = @"$(Environment.get_home_dir())/$ics";
 
+            if (parms.verbosity > 2) {
+                print(@"calendar path: $path\n");
+            }
+
+
             if (FileUtils.test(path, FileTest.EXISTS)) {
                 holidays = new Holidays.from_path(path);
 
-                if (parm.verbosity > 2) {
+                if (parms.verbosity > 2) {
                     holidays.list.foreach((entry) => {
                         print(@"$(entry.date) $(entry.description)\n");
                     });
                 }
     
-                holidays.today = 20200310;
-                holidays.tomorrow = 20200311;
+                //  holidays.today = 20200310;
+                //  holidays.tomorrow = 20200311;
+                if (parms.verbosity > 2) {
+                    print(@"today: $(holidays.today)\n");
+                    print(@"tomorrow: $(holidays.tomorrow)\n");
+                }
+
         
                 today_is = holidays.today_is();
                 tomorrow_is = holidays.tomorrow_is();
 
-                if (parm.verbosity > 2) {
+                if (parms.verbosity > 2) {
                     print("Today:\n");
                     foreach (var s in today_is) {
                         print(@"$s\n");
@@ -151,6 +168,11 @@ public class CatLock.MainWindow : GLib.Object
     
         }
 
+        if (parms.verbosity > 1) {
+		    var dt = GLib.Time.local(now);
+            print( @"catlock start at: $(dt.hour):$(dt.minute)\n");
+            
+        }
         initialize();
         processEvent(ApplicationInit);        
         run();
@@ -205,6 +227,21 @@ public class CatLock.MainWindow : GLib.Object
         imlib_context_set_visual(visual);
 
         generateImageFilename();
+        /* Load the descriptive text */
+        try {
+            print(@"filename: $textfn\n");
+            var file = File.new_for_path(textfn);
+            if (file.query_exists ()) {
+                var dis = new DataInputStream (file.read ());
+                copyright = dis.read_line(null);
+                title = dis.read_line(null);
+            }
+    
+        }
+        catch (Error e) {}
+        print(@"copyright: $copyright\n");
+        print(@"title: $title\n");
+
         ////////////////////////////////////////////
         /* Load the window level background image */
         ////////////////////////////////////////////
@@ -261,6 +298,7 @@ public class CatLock.MainWindow : GLib.Object
         // load fonts
         set_font_name(parms.font);
         font_08 = display.font_open_name(screen, fontname_08);
+        font_12 = display.font_open_name(screen, fontname_12);
         font_16 = display.font_open_name(screen, fontname_16);
         font_24 = display.font_open_name(screen, fontname_24);
         font_32 = display.font_open_name(screen, fontname_32);
@@ -294,26 +332,45 @@ public class CatLock.MainWindow : GLib.Object
         draw();
         while (running) {
             /**
-                this 'works' but is insecure. It should just reload and redisplay the image.
+                this works but is insecure. It should just reload and redisplay the image.
                 I should pass the current pid and kill that from the 2nd process
                 Or use a dbus message, and from badabing as well to signal rollover? 
             */
             if (rollover) {
-                var dt = new DateTime.now_local();
-                var success = false;
+                //GLib.Time.local(time_t())
+                var now = time_t();
+                var dt = GLib.Time.local(now);
 
-                if (dt.get_hour() == 0 && dt.get_minute() > 2) {
+                 var success = false;
+
+                if (dt.hour == 0 && dt.minute > 5) {
+                    if (parms.verbosity > 1) {
+                        print( @"Rollover at: $(dt.hour):$(dt.minute)\n");
+                    }
                     /*
-                     * if running after 12:02 am and started on the previous day then restart
+                     * if running after 12:05 am and started on the previous day then restart
                      */
                     try {
                         success = Process.spawn_command_line_async(@"com.github.darkoverlordofdata.catlock");
+                        if (parms.verbosity > 1) {
+                            print( @"Sucess!\n");
+                        }
+                        
                     }
                     catch (SpawnError e) {
                         print ("Error: %s\n", e.message);
                         success = false;
+                        if (parms.verbosity > 1) {
+                            print ( @"Error: $(e.message)\n");
+                        }
                     }
-                    if (success) Process.exit(0);
+                    if (success) {
+                        if (parms.verbosity > 1) {
+                            print( @"Exit!\n");
+                        }
+
+                        Process.exit(0);
+                    }
                 }
             }
             run_loop();
@@ -325,11 +382,20 @@ public class CatLock.MainWindow : GLib.Object
      */
     public void run_loop() {
 
+        if (parms.scrot) {
+            scrot_count++;
+            parms.scrot = scrot_count>2 ? false : parms.scrot;
+            try {
+                Process.spawn_command_line_async("/usr/local/bin/scrot -d 1");
+            }
+            catch (GLib.SpawnError ex) { }
+        }
         if (ev.type == X.EventType.KeyPress) {
             processEvent(ApplicationKeyPress);
             inactive = timeout;
             if (parms.scrot) {
-                parms.scrot = false;
+                scrot_count++;
+                parms.scrot = scrot_count>2 ? false : parms.scrot;
                 try {
                     Process.spawn_command_line_async("/usr/local/bin/scrot -d 1");
                 }
@@ -500,7 +566,8 @@ public class CatLock.MainWindow : GLib.Object
             // 1.0 fps
             ticks = 0;
             draw();
-            if (get_today() > today) rollover = true;
+            // check if program started before today
+            if (get_today() > start_date) rollover = true;
         }
     }
 
@@ -546,6 +613,7 @@ public class CatLock.MainWindow : GLib.Object
             case 13660768:
                 offset = 0;
                 fontname_08 = parms.font + "-8";
+                fontname_12 = parms.font + "-12";
                 fontname_16 = parms.font + "-16";
                 fontname_24 = parms.font + "-24";
                 fontname_32 = parms.font + "-32";
@@ -555,6 +623,7 @@ public class CatLock.MainWindow : GLib.Object
             case 19201080:
                 offset = 12;
                 fontname_08 = parms.font + "-12";
+                fontname_12 = parms.font + "-12";
                 fontname_16 = parms.font + "-24";
                 fontname_24 = parms.font + "-36";
                 fontname_32 = parms.font + "-48";
@@ -582,6 +651,11 @@ public class CatLock.MainWindow : GLib.Object
      public void generateImageFilename()  {
         
         string types[] = { "png", "jpg", "jpeg", "xpm", "xpm.gz" };
+
+        textfn = @"/home/$user_name/Pictures/.badabing";
+
+        if (parms.verbosity > 1)
+            print("description filename: %s\n", textfn);
 
         foreach (var type in types) {
             imgfn = image_filename(user_name, parms.theme, "bg", type);
@@ -640,6 +714,14 @@ public class CatLock.MainWindow : GLib.Object
         switch (state) {
     
         case ApplicationDate:
+
+            var copy1 = copyright.substring(0, copyright.index_of("("));
+            var copy2 = copyright.substring(copyright.index_of("(")+2);
+
+            drawable.draw_string(&color, font_16, 60,  60, title, title.length);
+            drawable.draw_string(&color, font_12, 60,  85, copy1, copy1.length);
+            drawable.draw_string(&color, font_08, 60, 110, copy2, copy2.length-1);
+
             int row_size = 22;
             int row = 600 - (today_is.length*row_size + tomorrow_is.length*row_size);
             row =(int) ((float)row * ((float)width/1366.0f));

@@ -9,7 +9,7 @@
 
 
     <key name="calendar-path" type="s">
-      <default>"~/.local/share/catlock/us_en.ics"</default>
+      <default>".local/share/catlock/us_en.ics"</default>
       <summary>Calendar</summary>
       <description>Path to ICS Calendar data</description>
     </key>

@@ -73,8 +73,6 @@ com.github.darkoverlordofdata.catlock
 
 ![Screenshot](https://github.com/darkoverlordofdata/catlock/raw/master/assets/1.png "Screenshot")
 
-![Screenshot](https://github.com/darkoverlordofdata/catlock/raw/master/assets/2.png "Screenshot")
-
 sudo cp ./data/com.github.darkoverlordofdata.catlock.gschema.xml /usr/local/share/glib-2.0/schemas
 sudo glib-compile-schemas /usr/local/share/glib-2.0/schemas
 
