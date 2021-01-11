@@ -658,20 +658,20 @@ public class CatLock.MainWindow : GLib.Object
             print("description filename: %s\n", textfn);
 
         foreach (var type in types) {
-            imgfn = image_filename(user_name, parms.theme, "bg", type);
+            imgfn = image_filename(user_name, parms.theme, "locked", type);
             if (FileUtils.test(imgfn, FileTest.EXISTS)) break;
         }
 
         if (parms.verbosity > 1)
-            print("background image filename: %s\n", imgfn);
+            print("locked image filename: %s\n", imgfn);
 
         foreach (var type in types) {
-            boximgfn = image_filename(user_name, parms.theme, "box", type);
+            boximgfn = image_filename(user_name, parms.theme, "input", type);
             if (FileUtils.test(boximgfn, FileTest.EXISTS)) break;
         }
     
        if (parms.verbosity > 1)
-            print("box image filename: %s\n", boximgfn);
+            print("input image filename: %s\n", boximgfn);
 
         if (!FileUtils.test(imgfn, FileTest.EXISTS) || !FileUtils.test(boximgfn, FileTest.EXISTS)) {
             die(@"image $imgfn does not exist\n");
@@ -682,7 +682,7 @@ public class CatLock.MainWindow : GLib.Object
      * build the image filename
      */
      public string image_filename(string user, string theme, string name, string type) {
-        return @"/home/$user/.local/share/catlock/themes/$theme/$name.$type";
+        return @"/home/$user/.local/share/catlock/themes/$theme.$name.$type";
     }
 
     /**

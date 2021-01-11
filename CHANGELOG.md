@@ -26,3 +26,7 @@
 * 0.5 - 12/24/2020
 
     * add descriptive text
+
+* 0.6 - 1/11/2021
+
+    * collapse ~/.local/catlock/themes
