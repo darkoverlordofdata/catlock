@@ -61,7 +61,7 @@ executable(
     ],
     vala_args: [
         meson.source_root() + '/vapi/config.vapi',
-        meson.source_root() + '/vapi/x11.vapi',
+        # meson.source_root() + '/vapi/x11.vapi',
         meson.source_root() + '/vapi/user.vapi'
     ],
     dependencies: [

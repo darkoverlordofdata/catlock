@@ -98,7 +98,10 @@ struct _FcCharSet {
 	public class FtDraw {
 		[CCode (cname = "XftDrawString8")]
 		public int draw_string(FtColor* color, FtFont* font, int x, int y, char* str, int length);
-	
+
+		[CCode (cname = "XftDrawStringUtf8")]
+		public int draw_string_utf8(FtColor* color, FtFont* font, int x, int y, char* str, int length);
+
 		[CCode (cname = "XftDrawRect")]
 		public void draw_rect(FtColor* color, int x, int y, uint width, uint height);
 	

@@ -718,8 +718,9 @@ public class CatLock.MainWindow : GLib.Object
             var copy1 = copyright.substring(0, copyright.index_of("("));
             var copy2 = copyright.substring(copyright.index_of("(")+2);
 
+            // xftdrawstring
             drawable.draw_string(&color, font_16, 60,  60, title, title.length);
-            drawable.draw_string(&color, font_12, 60,  85, copy1, copy1.length);
+            drawable.draw_string_utf8(&color, font_12, 60,  85, copy1, copy1.length);
             drawable.draw_string(&color, font_08, 60, 110, copy2, copy2.length-1);
 
             int row_size = 22;
