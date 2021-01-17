@@ -417,21 +417,21 @@ public class CatLock.MainWindow : GLib.Object
                     print(@"pin = $(parms.pin)\n");
                     if (passwd == parms.pin) running = false;
                 }
-                else { // only works with libcrypt.so.1
-                    print("before get password\n");
-                    if (salt == "") salt = get_password();
-                    print(@"salt = [$salt]\n");
+                //  else { // only works with libcrypt.so.1
+                //      print("before get password\n");
+                //      if (salt == "") salt = get_password();
+                //      print(@"salt = [$salt]\n");
 
-                    print("after get password\n");
+                //      print("after get password\n");
 
-                    char* ss = User.crypt(passwd, salt);
-                    if (ss == null) {
-                        print("crypt returns null\n");
-                        running = false;
-                    }
-                    else
-                    if (salt == (string)User.crypt(passwd, salt)) running = false;
-                }
+                //      char* ss = User.crypt(passwd, salt);
+                //      if (ss == null) {
+                //          print("crypt returns null\n");
+                //          running = false;
+                //      }
+                //      else
+                //      if (salt == (string)User.crypt(passwd, salt)) running = false;
+                //  }
 
                 if (running) {
                     display.bell(100);
@@ -810,20 +810,20 @@ public class CatLock.MainWindow : GLib.Object
     *
     * only run as root
     */
-    string get_password() {
-        string rval;
-        Passwd pw;
+    //  string get_password() {
+    //      string rval;
+    //      Passwd pw;
 
-        if (User.geteuid() != 0) {
-            die("cannot retrieve password entry (make sure to suid catlock)\n");
-        }
-        pw = Passwd.from_uid(User.getuid());
-        User.endpwent();
-        rval =  pw.passwd;
+    //      if (User.geteuid() != 0) {
+    //          die("cannot retrieve password entry (make sure to suid catlock)\n");
+    //      }
+    //      pw = Passwd.from_uid(User.getuid());
+    //      User.endpwent();
+    //      rval =  pw.passwd;
 
-        /* drop privileges */
-        if(User.setgid(pw.gid) < 0 || User.setuid(pw.uid) < 0)
-            die("cannot drop privileges\n");
-        return rval;
-    }
+    //      /* drop privileges */
+    //      if(User.setgid(pw.gid) < 0 || User.setuid(pw.uid) < 0)
+    //          die("cannot drop privileges\n");
+    //      return rval;
+    //  }
 }
