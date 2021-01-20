@@ -42,7 +42,7 @@ public class CatLock.MainWindow : GLib.Object
     X.Window panel;         // drawing panel
     X.Event ev;             // input events
     X.Colormap cm;          // overhead
-    X.Cursor invisible;     // overhead
+    X.Cursor cursor;        // overhead
     X.Visual visual;        // overhead
 
     X.FtDraw drawable;      // freetype drawable
@@ -124,8 +124,8 @@ public class CatLock.MainWindow : GLib.Object
 
 
             var config = new Settings(APPLICATION_ID);
-            var ics = config.get_string("calendar-path");
-            var path = @"$(Environment.get_home_dir())/$ics";
+            var ics_path = config.get_string("calendar-path");
+            var path = @"$(Environment.get_home_dir())/$ics_path";
 
             if (parms.verbosity > 2) {
                 print(@"calendar path: $path\n");
@@ -133,7 +133,8 @@ public class CatLock.MainWindow : GLib.Object
 
 
             if (FileUtils.test(path, FileTest.EXISTS)) {
-                holidays = new Holidays.from_path(path);
+                //  holidays = new Holidays.from_path_and_date(path, parms.date);
+                holidays = new Holidays.from_path(path, parms.date);
 
                 if (parms.verbosity > 2) {
                     holidays.list.foreach((entry) => {
@@ -214,13 +215,20 @@ public class CatLock.MainWindow : GLib.Object
         display.alloc_color(cm, &bg);
         display.alloc_color(cm, &fg);
 
-        var wa = X.SetWindowAttributes(){ override_redirect = true, background_pixel = bg.pixel };
+        //  var wa = X.SetWindowAttributes(){ override_redirect = true, background_pixel = bg.pixel };
+        var wa = X.SetWindowAttributes() { 
+            override_redirect = true, 
+            event_mask = (EventMask.KeyPressMask | EventMask.PointerMotionMask ) 
+        };
         visual = display.default_visual(screen);
         
-        window = create_window(display, root, 0, 0, width, height, 
-        //  window = create_window(display, root, 100, 30, width/4, height/4, 
-            0, depth, (uint)X.COPY_FROM_PARENT, 
-            visual, X.CW.OverrideRedirect | X.CW.BackPixel, ref wa);
+        window = create_window(display, root, 0, 0, width, height-1, 
+            0, 0, WindowClass.INPUT_OUTPUT, 
+            (Visual)X.COPY_FROM_PARENT, X.CW.EventMask | X.CW.OverrideRedirect | X.CW.BackPixel, ref wa);
+
+        //  window = create_window(display, root, 0, 0, width, height, 
+        //      0, depth, (uint)X.COPY_FROM_PARENT, 
+        //      visual, X.CW.OverrideRedirect | X.CW.BackPixel, ref wa);
 
         imlib_context_set_dither(1);
         imlib_context_set_display(display);
@@ -289,11 +297,10 @@ public class CatLock.MainWindow : GLib.Object
         var xrc = X.RenderColor() { red = fg.red, green = fg.green, blue = fg.blue, alpha = 0xffff };
         display.alloc_color_value(visual, cm, &xrb, &bgcolor);
         display.alloc_color_value(visual, cm, &xrc, &color);
-        display.alloc_named_color(cm, "black", &black, &dummy);
 
-        char curs[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-        var pmap = display.create_bitmap_from_data(window, curs, 8, 8);
-        invisible = display.create_pixmap_cursor(pmap, pmap, &black, &black, 0, 0);
+        var blank = display.create_pixmap_from_bitmap_data(window, "\0", 1, 1, 0, 0, 1);
+        cursor = display.create_pixmap_cursor(blank, blank, &black, &black, 0, 0);
+
 
         // load fonts
         set_font_name(parms.font);
@@ -304,11 +311,20 @@ public class CatLock.MainWindow : GLib.Object
         font_32 = display.font_open_name(screen, fontname_32);
         font_64 = display.font_open_name(screen, fontname_64);
 
-        if (!grabPointer())
-            die("Unable to grab mouse pointer");
 
-        if (!grabKeyboard())
+        int k1 = display.grab_keyboard(root, true, 
+            GrabMode.Async, GrabMode.Async, (int)CURRENT_TIME);
+        if (k1 != GRAB_SUCCESS) {
+            die("Unable to grab mouse pointer");
+        }
+
+   
+        int p1 = display.grab_pointer(root, true, 
+            EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask,
+            GrabMode.Async, GrabMode.Async, None, None, (int)CURRENT_TIME);
+        if (p1 != GRAB_SUCCESS) {
             die("Unable to grab keyboard");
+        }
 
         display.sync(false);
         display.map_window(window);
@@ -577,30 +593,11 @@ public class CatLock.MainWindow : GLib.Object
      public override void dispose() {
          if (display != null) {
             display.ungrab_pointer((int)CURRENT_TIME);
+            display.ungrab_keyboard((int)CURRENT_TIME);
             display.color_free(visual, cm, &color);
          }
     }
 
-    /**
-     * Grab control of the mouse pointer
-     */
-     public bool grabPointer() {
-        var result = display.grab_pointer(root, false, 
-            EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask,
-            GrabMode.Async, GrabMode.Async, None, invisible, (int)CURRENT_TIME);
-
-        return (result == GRAB_SUCCESS);
-    }
-    
-    /**
-     * Grab control of the keyboard
-     */
-     public bool grabKeyboard() {
-        var result = display.grab_keyboard(root, false,
-            GrabMode.Async, GrabMode.Async, (int)CURRENT_TIME);
-
-        return (result == GRAB_SUCCESS);
-    }
 
     /**
      * Generate the required font names
@@ -794,7 +791,7 @@ public class CatLock.MainWindow : GLib.Object
                 break;
         
         }
-        display.define_cursor(active, invisible);
+        display.define_cursor(active, cursor);
         display.map_raised(active);
         // if the font does not exist, then fallback to fixed and give warning 
         drawable = display.draw_create(active, visual, cm);

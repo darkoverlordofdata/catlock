@@ -1,0 +1,22 @@
+# BUG: MLK Day on wrong date
+
+## suposition
+I'm decoding the ics format wrong
+
+## ics format
+
+relevent section is here:
+```
+BEGIN:VEVENT
+DTSTAMP:20201223T231623Z
+UID:7378f71a-f772-31e8-bad0-114249dbf0a8
+DTSTART;VALUE=DATE:20190121
+CLASS:PUBLIC
+SUMMARY;LANGUAGE=en-US:Martin Luther King\, Jr. Day
+TRANSP:TRANSPARENT
+RRULE:FREQ=YEARLY;COUNT=4;BYDAY=3MO;BYMONTH=1
+CATEGORIES:Holidays
+X-APPLE-UNIVERSAL-ID:ea7d1900-876a-7c53-2015-a84a9eea1354
+END:VEVENT
+```
+

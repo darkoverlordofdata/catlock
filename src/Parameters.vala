@@ -34,6 +34,7 @@ public class Parameters
 	public static string	_theme = null;		// optional theme override
 	public static string	_pin = null;		// optional pin override
 	public static bool 		_calendar = false;	// deprecated
+	public static int 		_date = 0;
 
 	const OptionEntry[] options = {
 		{ "verbosity", 	0, 0, OptionArg.INT, 	ref _verbosity, 	"verbose level", null },
@@ -44,6 +45,7 @@ public class Parameters
 		{ "theme", 		0, 0, OptionArg.STRING, ref _theme, 		"override theme", null },
 		{ "pin",		0, 0, OptionArg.STRING, ref _pin, 			"override pin value", null},
 		{ "calendar", 	0, 0, OptionArg.NONE, 	ref _calendar, 		"deprecated, use dconf", null },
+		{ "date",		0, 0, OptionArg.INT, 	ref _date, 			"calendar testing date", null },
 		{ null }
 	};
 
@@ -58,6 +60,7 @@ public class Parameters
 	public bool prefer_pin;
 	public bool pin_alpha;
 	public int pin_length;
+	public int date;
 	/**
 	 * Command line
 	 *	 
@@ -119,6 +122,7 @@ public class Parameters
 		scrot 		= _scrot;
 		version 	= _version;
 		as_user 	= _as_user;
+		date		= _date;
 		
 		// optional overrides
 		font 		= _font ?? font;
@@ -134,6 +138,7 @@ public class Parameters
 			print(@"font 		= $font\n");
 			print(@"theme 		= $theme\n");
 			print(@"pin 		= $pin\n");
+			print(@"date		= $date\n");
 		} 
 	}
 }

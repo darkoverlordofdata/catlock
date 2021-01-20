@@ -159,6 +159,9 @@ struct _FcCharSet {
 		[CCode (cname = "XCreatePixmapCursor")]
 		public Cursor create_pixmap_cursor(Pixmap source, Pixmap mask, Color *foreground_color, Color *background_color, uint x, uint y);
 
+		[CCode (cname = "XCreatePixmapFromBitmapData")]
+		public X.Pixmap create_pixmap_from_bitmap_data (X.Drawable d, char* data, uint width, uint height, ulong fg, ulong bg, uint depth);
+
 		[CCode (cname = "XftDrawCreate")]
 		public FtDraw draw_create(Drawable drawable, Visual visual, Colormap colormap);
 
@@ -418,6 +421,9 @@ struct _FcCharSet {
 
 		[CCode (cname = "XUngrabKey")]
 		public int ungrab_key (int keycode, uint modifiers, Window grab_window);
+
+		[CCode (cname = "XUngrabKeyboard")]
+		public int ungrab_keyboard (int time);
 
 		[CCode (cname = "XUngrabPointer")]
 		public int ungrab_pointer (int time);
@@ -706,6 +712,11 @@ struct _FcCharSet {
 
 	[CCode (cname = "XCreatePixmap")]
 	public X.Pixmap create_pixmap (X.Display display, X.Drawable d, uint width, uint height, uint depth);
+
+	//  [CCode (cname = "XCreatePixmapFromBitmapData")]
+	//  public X.Pixmap create_pixmap_from_bitmap_data (X.Display display, X.Drawable d, char* data, uint width, uint height, ulong fg, ulong bg, uint depth);
+		
+		//uint width, uint height, uint depth);
 
 	[CCode (cname = "XFreePixmap")]
 	public void free_pixmap(X.Display display, X.Pixmap pixmap);
