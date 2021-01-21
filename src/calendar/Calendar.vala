@@ -49,34 +49,12 @@ public class CatLock.Calendar : Object
 		string s;
 
 		FileUtils.get_contents(path, out s);
-		int count = 0;
+		var s1 = /\r\n /.replace(s, -1, 0, "");		// remove spurious linefeeds
+		var s2 = /\\\; /.replace(s1, -1, 0, " ");	// remove slash-semicolon
+		var s3 = /\\, /.replace(s2, -1, 0, " ");	// remove slash-comma
+		var array = s3.split("\r\n");
 	
-		/*
-		 * look for line continuation, and set the previous \r\n seqence to spaces
-		 */
-		int len = s.length;
-		char* c = (char*)s;
-		for (int i = 0; i<len; i++) {
-			if (c[i] == '\r' && c[i+1] == '\n') {
-				if (c[i+2] == ' ') {
-					// line continuation?
-					c[i] = ' ';
-					c[i+1] = ' ';
-				} else {
-					count += 1;
-				}
-			}
-		}
-
-		/*
-		 * remove the extra spaces and \ char 
-		 */
-		str = /   (.)\\\; /.replace (s, -1, 0, "\\1 ");
-		//  var nevents = 0;
-	
-		var array = str.split("\r\n");
-		
-
+		int count = array.length-1;
 		CalendarNode[] nodes = new CalendarNode[count];
 		for (int i=0; i<count; i++) {
 			nodes[i] = new CalendarNode(array[i]);

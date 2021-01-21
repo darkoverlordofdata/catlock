@@ -27,6 +27,56 @@
 
 namespace CatLock 
 {
+    enum DayOfWeek {
+        Sunday = 0,
+        Monday = 1,
+        Tuesday = 2,
+        Wednesday = 3,
+        Thursday = 4,
+        Friday = 5,
+        Saturday = 6,
+        UNKNOWN = -1;
+
+        public string to_string() {
+            switch (this) {
+            case Sunday:    return "Sunday";
+            case Monday:    return "Monday";
+            case Tuesday:   return "Tuesday";
+            case Wednesday: return "Wednesday";
+            case Thursday:  return "Thursday";
+            case Friday:    return "Friday";
+            case Saturday:  return "Satuday";
+            default: assert_not_reached();
+            }
+        }
+
+        public static DayOfWeek parse(string day) {
+            switch (day) {
+            case "Sunday":    return Sunday;
+            case "Monday":    return Monday;
+            case "Tuesday":   return Tuesday;
+            case "Wednesday": return Wednesday;
+            case "Thursday":  return Thursday;
+            case "Friday":    return Friday;
+            case "Saturday":  return Saturday;
+
+            case "SU":  return Sunday;
+            case "MO":  return Monday;
+            case "TU":  return Tuesday;
+            case "WE":  return Wednesday;
+            case "TH":  return Thursday;
+            case "FR":  return Friday;
+            case "SA":  return Saturday;
+
+            default: return UNKNOWN;
+            }
+        } 
+
+        public static DayOfWeek[] all() {
+            return { Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday };
+        }        
+
+    }
     /**
     * last_dayofmonth
     * 
@@ -92,7 +142,6 @@ public class CatLock.Holidays : Object
 
         Date d = {};
 		d.set_dmy((DateDay)dd, mm, (DateYear)yy);
-        //  d.set_time_t(now);
         d.add_days(1);
 
         tomorrow = ((d.get_year())*10000 + (d.get_month())*100 + d.get_day());
@@ -118,9 +167,10 @@ public class CatLock.Holidays : Object
         //  print(@"cal.events.length = $(cal.events.length)\n");
         for (int i=0; i<cal.events.length; i++) {
             if (cal.events[i].rrule != null) {
-                //  print(@"RULE:$(cal.events[i].rrule)\n");
+                //  print(@"RULE:$(cal.events[i].summary)\n");
                 rr = new Rule(cal.events[i].rrule);
-                //  print(@" $(cal.events[i].dtstart) $(cal.events[i].rrule)\n");
+                bool mlk = "20190121" == cal.events[i].dtstart;
+                //  if (mlk) print(@"::$(cal.events[i].dtstart) $(cal.events[i].rrule)\n");
                 if ("YEARLY" != rr.freq) continue;
 
                 int dtstart = int.parse(cal.events[i].dtstart);
@@ -131,63 +181,59 @@ public class CatLock.Holidays : Object
                     * Holiday such as Memorial Day or MLK Birthday
                     * occur on the Nth Weekday of the month.
                     */
-                    bool searching = true;
                     bool last;
-                    char byday;
-                    int ordinal;
+                    int byday;
+                    int nth;
                     string dayname;
 
                     if (rr.byday[0] == '-') {
                         last = true;
                         byday = rr.byday[1];
-                        ordinal = (int)byday-48;
+                        nth = (int)byday-48;
                         dayname = rr.byday.substring(2);
                     } else {
                         last = false;
                         byday = rr.byday[0];
-                        ordinal = (int)byday-48;
+                        nth = (int)byday-48;
                         dayname = rr.byday.substring(1);
                     }
 
                     int yyyy = (today/10000) * 10000;
-                    int mm = int.parse(rr.bymonth);
+                    int bymonth = int.parse(rr.bymonth);
             
                     if (last) {
                         /**
-                        * Look for Last Monday
+                        * Look for Last Nth Day
                         */
-                        while (searching) {
-            
-                            //  print(@"Look for last $dayname day of month\n");
-                            int last_day = last_dayofmonth(yyyy, mm);
-                            int offset = "SU.MO.TU.WE.TH.FR.SA.".index_of(dayname);
-                            if (offset < 0) break;
-                            int day = last_day - 7 * ordinal + offset;
-                            dtstart = yyyy + mm * 100 + day;
-                            if (dtstart < today) yyyy += 10000;
-                            else searching = false;
-                        }
+                        //  print(@"Look for last $dayname day of month\n");
+                        int last_day = last_dayofmonth(yyyy, bymonth);
+                        int byday_name = "SU.MO.TU.WE.TH.FR.SA.".index_of(dayname);
+                        if (byday_name < 0) break;
+                        byday_name /= 3;
+                        int day = last_day - 7 * nth + (byday_name);
+                        dtstart = yyyy + bymonth * 100 + day;
+                        if (dtstart < today) yyyy += 10000;
                     } else {
                         /**
-                        * Look for Nth Monday
+                        * Look for Nth Day of month
                         */
-                        while (searching) {
-                            //  print(@"Look for Nth $dayname day of month\n");
-            
-                            int start_day = dayofweek(yyyy/10000, mm, 1);
-                            int offset = "SU.MO.TU.WE.TH.FR.SA.".index_of(dayname);
-                            if (offset < 0) break;
-                            int weeks;
-                            if (start_day == 0) 
-                                weeks = (7 * (ordinal-1)) + 1;
-                            else
-                                weeks = (7 * (ordinal)) + 1;
-                            int day = weeks - start_day + offset;
-                            dtstart = yyyy + mm * 100 + day;
-            
-                            if (dtstart < today) yyyy += 10000;
-                            else searching = false;
-                        }
+                        //  if (mlk) print(@"Look for Nth $dayname day of month\n");
+        
+                        int startday_name = dayofweek(yyyy/10000, bymonth, 1);
+                        var byday_name = DayOfWeek.parse(dayname);
+                        if (byday_name ==  DayOfWeek.UNKNOWN) break;
+                        
+                        int days;
+                        if (startday_name == 0) 
+                            days = (7 * (nth-1)) + 1;
+                        else
+                            days = (7 * (nth)) + 1;
+                        int day = days - startday_name + byday_name;
+                        //  if (mlk) print(@"byday_name=$(byday_name), startday_name=$startday_name days=$days day=$day nth=$nth\n");
+                        dtstart = yyyy + bymonth * 100 + day;
+    
+                        if (dtstart < today) yyyy += 10000;
+                        
                     }
                             
                 } 

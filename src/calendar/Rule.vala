@@ -35,6 +35,7 @@ public class CatLock.Rule : Object
 	public string bymonth = "";      //  bymonth
 	public string[] array;
 
+
 	public Rule(string str) {
 		array = str.split_set("=;");
 		//  print(@"$str\n");
