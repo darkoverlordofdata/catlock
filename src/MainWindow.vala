@@ -98,14 +98,12 @@ public class CatLock.MainWindow : GLib.Object
     bool running = false;
     bool first = true;
     bool rollover = false;
-    const int TIMEZONE_OFFSET = -(8*60*60);
 
     int get_today() {
         var now = time_t();
 		var t = GLib.Time.local(now);
 		
 		return (1900+t.year)*10000 + (t.month+1)*100 + t.day;
-
     }
     /**
      * Run:
@@ -133,7 +131,6 @@ public class CatLock.MainWindow : GLib.Object
 
 
             if (FileUtils.test(path, FileTest.EXISTS)) {
-                //  holidays = new Holidays.from_path_and_date(path, parms.date);
                 holidays = new Holidays.from_path(path, parms.date);
 
                 if (parms.verbosity > 2) {
@@ -142,8 +139,6 @@ public class CatLock.MainWindow : GLib.Object
                     });
                 }
     
-                //  holidays.today = 20200310;
-                //  holidays.tomorrow = 20200311;
                 if (parms.verbosity > 2) {
                     print(@"today: $(holidays.today)\n");
                     print(@"tomorrow: $(holidays.tomorrow)\n");
@@ -215,7 +210,6 @@ public class CatLock.MainWindow : GLib.Object
         display.alloc_color(cm, &bg);
         display.alloc_color(cm, &fg);
 
-        //  var wa = X.SetWindowAttributes(){ override_redirect = true, background_pixel = bg.pixel };
         var wa = X.SetWindowAttributes() { 
             override_redirect = true, 
             event_mask = (EventMask.KeyPressMask | EventMask.PointerMotionMask ) 
@@ -223,12 +217,8 @@ public class CatLock.MainWindow : GLib.Object
         visual = display.default_visual(screen);
         
         window = create_window(display, root, 0, 0, width, height-1, 
-            0, 0, WindowClass.INPUT_OUTPUT, 
-            (Visual)X.COPY_FROM_PARENT, X.CW.EventMask | X.CW.OverrideRedirect | X.CW.BackPixel, ref wa);
-
-        //  window = create_window(display, root, 0, 0, width, height, 
-        //      0, depth, (uint)X.COPY_FROM_PARENT, 
-        //      visual, X.CW.OverrideRedirect | X.CW.BackPixel, ref wa);
+            0, 0, WindowClass.INPUT_OUTPUT, (Visual)X.COPY_FROM_PARENT, 
+            X.CW.EventMask | X.CW.OverrideRedirect | X.CW.BackPixel, ref wa);
 
         imlib_context_set_dither(1);
         imlib_context_set_display(display);
@@ -292,7 +282,7 @@ public class CatLock.MainWindow : GLib.Object
         //////////////////////////////////////////////
         // set foreground and backgound default colors
         //////////////////////////////////////////////
-        X.Color black, dummy;
+        X.Color black;
         var xrb = X.RenderColor() { red = bg.red, green = bg.green, blue = bg.blue, alpha = 0xffff };
         var xrc = X.RenderColor() { red = fg.red, green = fg.green, blue = fg.blue, alpha = 0xffff };
         display.alloc_color_value(visual, cm, &xrb, &bgcolor);
@@ -716,7 +706,7 @@ public class CatLock.MainWindow : GLib.Object
             var copy2 = copyright.substring(copyright.index_of("(")+2);
 
             // xftdrawstring
-            drawable.draw_string(&color, font_16, 60,  60, title, title.length);
+            drawable.draw_string_utf8(&color, font_16, 60,  60, title, title.length);
             drawable.draw_string_utf8(&color, font_12, 60,  85, copy1, copy1.length);
             drawable.draw_string(&color, font_08, 60, 110, copy2, copy2.length-1);
 

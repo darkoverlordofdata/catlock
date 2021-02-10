@@ -39,13 +39,16 @@ executable(
     'src/CatLock.vala',
     'src/Parameters.vala',
     'src/MainWindow.vala',
-    # 'src/Display.vala',
-    # 'src/Panel.vala',
-    'src/calendar/Calendar.vala',
-    'src/calendar/CalendarNode.vala',
-    'src/calendar/Event.vala',
-    'src/calendar/Holidays.vala',
-    'src/calendar/Rule.vala',
+    'src/Holidays.vala',
+    'src/iCal/DayOfWeek.vala',
+    'src/iCal/Calendar.vala',
+    'src/iCal/CalendarNode.vala',
+    'src/iCal/EventNode.vala',
+    'src/iCal/RRule.vala',
+    'src/Plugins/IPlugin.vala',
+    # 'src/Plugins/ClockPlugin.vala',
+    # 'src/Plugins/InfoPlugin.vala',
+    # 'src/Plugins/WeatherPlugin.vala',
 
     import('gnome').compile_resources(
         'as-resources', join_paths('data', meson.project_name() + '.gresource.xml'),
@@ -67,6 +70,7 @@ executable(
     dependencies: [
         dependency('gio-2.0'),
         dependency('gobject-2.0'),
+        dependency('gmodule-2.0'),
         dependency('x11'),
         dependency('imlib2'),
         meson.get_compiler('c').find_library('m', required: false)

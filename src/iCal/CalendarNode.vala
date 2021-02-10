@@ -25,50 +25,57 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 /**
- * Calendar rrule from an ICS file 
+ * Calendar from an ICS file 
  */
-public class CatLock.Rule : Object
+
+class ICal.CalendarNode : Object
 {
-	public string freq = "";         //  yearly
-	public string count = "";        //  5
-	public string byday = "";        //  byday
-	public string bymonth = "";      //  bymonth
-	public string[] array;
+	public string name = "";
+	public string param = "";
+	public string value = "";
 
+	public CalendarNode(string str) throws CalendarException.InvalidCalendarNode {
 
-	public Rule(string str) {
-		array = str.split_set("=;");
-		//  print(@"$str\n");
-		//  foreach (string s in array) print(@"$s  ");
-		//  print("\n");
-
-		for (int i = 0; i<array.length; i++) {
-			/* FREQ Repeat (Yearly, Monthly, Weekly, Daily, Hourly) */
-			if (array[i] == "FREQ")
-				freq = array[i+1];
-
-        	/* COUNT/UNTIL End (Never After:n On:date) */
-			else if (array[i] == "COUNT")
-				count = array[i+1];
-
-        	/* BYDAY+SETPOS+BYMONTH OnThe (1st 2nd 3rd 4th Last;  Mon-Sun / Day/ Weekday/ WeekendDay) of (Jan-Dec) */
-			else if (array[i] == "BYDAY")
-				byday = array[i+1];
-			
-	        /* BYMONTH+BYMONTHDAY On (Jan - Dec; 1-31) */
-			else if (array[i] == "BYMONTH")
-				bymonth = array[i+1];
+		var c = (char*)str;
+		var index = -1;
+		for (var i=0; i<str.length; i++) {
+			if (c[i] == ';' || c[i] == ':') {
+				index = i;
+				break;
+			}
 		}
+		if (index < 0) throw new CalendarException.InvalidCalendarNode(str);
+		name = str.substring(0, index);
+		if (c[index] == ':') index += 1;
+
 		
+		var a = str.substring(index).split(":");
+		if (a.length == 1) {
+			if (a[0].index_of("=") > 0) {
+				value = "";
+				param = a[0];
+			}
+			else {
+				value = a[0];
+				param = "";
+			} 
+		}
+		else {
+			value = a[1];
+			if (a[0].index_of("=") == 0) {
+				param = a[0].substring(1);
+			} 
+			else {
+				param = a[0];
+			}
+		}
 	}
 
-	public string to_string() {
-		return """CalendarNode:
-	freq = %s
-	count = %s
-	byday = %s
-	bymonth = %s
-""".printf(freq, count, byday, bymonth);		
-	}
-
+//  	public string to_string() {
+//  		return """CalendarNode:
+//  	name = %s
+//  	value = %s
+//  	param = %s
+//  """.printf(name, value, param);		
+//  	}
 }

@@ -24,41 +24,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-using X;
-using Imlib2;
-using Config;
-
 /**
-* XWindow wrapper
-*/
-public class CatLock.Panel : GLib.Object 
+ * Calendar vevent an ICS file 
+ */
+public class ICal.EventNode : Object
 {
-	X.Window window;        // top level window
+	public string dtstamp = "";      //  DTSTAMP:20190531T224632Z
+	public string uid = "";          //  UID:c5bbb4ae-8dfd-33db-b3e0-4862c55e3ce7
+	public string dtstart = "";      //  DTSTART;VALUE=DATE:20180704
+	public string klass = "";        //  CLASS:PUBLIC
+	public string summary = "";      //  SUMMARY;LANGUAGE=en-US:Independence Day
+	public string transp = "";       //  TRANSP:TRANSPARENT
+	public string rrule = "";        //  RRULE:FREQ=YEARLY;COUNT=5
+	public string categories = "";   //  CATEGORIES:Holidays
+	public string id = "";           //  X-APPLE-UNIVERSAL-ID:f42c6443-488d-9756-925b-bf42f63a3348
 
-	/**
-	*/
-	public Panel(Display app, string imgfn) 
-	{
-		var image = Imlib2.Image.create_from_file(imgfn);
-		image.set_context();
-		int width = Imlib2.image_get_width();
-		int height = Imlib2.image_get_height();
-
-		if (app.panels.length > 1) {
-			window = X.create_simple_window(app.display, app.window, 0, 0, width, height,
-				0, app.fg.pixel, app.bg.pixel);
-		}
-		else window = app.window;
-
-		/* Set the top level background image */
-		var pixm = X.create_pixmap(app.display, window, width, height, app.depth);
-		Imlib2.context_set_drawable(pixm);
-		Imlib2.render_image_on_drawable(0, 0);
-
-		X.set_window_background_pixmap(app.display, window, pixm);
-		X.free_pixmap(app.display, pixm);
-
+	public EventNode() {}
+	
+	public string to_string() {
+		return """EventNode:
+	dtstamp = %s
+	uid = %s
+	dtstart = %s
+	klass = %s
+	summary = %s
+	transp = %s
+	rrule = %s
+	categories = %s
+	id = %s
+""".printf(dtstamp, uid, dtstart, klass, summary, transp, rrule, categories, id);		
 	}
-
-}
- 
+} 

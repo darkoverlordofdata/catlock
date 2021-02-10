@@ -24,34 +24,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-/**
- * Calendar vevent an ICS file 
- */
-public class CatLock.Event : Object
-{
-	public string dtstamp = "";      //  DTSTAMP:20190531T224632Z
-	public string uid = "";          //  UID:c5bbb4ae-8dfd-33db-b3e0-4862c55e3ce7
-	public string dtstart = "";      //  DTSTART;VALUE=DATE:20180704
-	public string klass = "";        //  CLASS:PUBLIC
-	public string summary = "";      //  SUMMARY;LANGUAGE=en-US:Independence Day
-	public string transp = "";       //  TRANSP:TRANSPARENT
-	public string rrule = "";        //  RRULE:FREQ=YEARLY;COUNT=5
-	public string categories = "";   //  CATEGORIES:Holidays
-	public string id = "";           //  X-APPLE-UNIVERSAL-ID:f42c6443-488d-9756-925b-bf42f63a3348
+ /*
+valac --pkg gmodule-2.0 -C WeatherPlugin.vala IPlugin.vala
+clang -shared -fPIC $(pkg-config --cflags --libs glib-2.0 gmodule-2.0) -o libweather.so WeatherPlugin.c
+*/
 
-	public Event() {}
-	
-	public string to_string() {
-		return """Event:
-	dtstamp = %s
-	uid = %s
-	dtstart = %s
-	klass = %s
-	summary = %s
-	transp = %s
-	rrule = %s
-	categories = %s
-	id = %s
-""".printf(dtstamp, uid, dtstart, klass, summary, transp, rrule, categories, id);		
-	}
-} 
+public class WeatherPlugin : Object, IPlugin
+{
+    public void Initialize() {
+
+    }
+    public void Display() {
+
+    }
+    
+    public void Update(){}
+}
+
+public Type register_plugin (Module module) {
+    // types are registered automatically
+    return typeof (WeatherPlugin);
+}

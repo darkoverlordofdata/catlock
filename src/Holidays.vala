@@ -25,58 +25,10 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 
+using ICal;
+
 namespace CatLock 
 {
-    enum DayOfWeek {
-        Sunday = 0,
-        Monday = 1,
-        Tuesday = 2,
-        Wednesday = 3,
-        Thursday = 4,
-        Friday = 5,
-        Saturday = 6,
-        UNKNOWN = -1;
-
-        public string to_string() {
-            switch (this) {
-            case Sunday:    return "Sunday";
-            case Monday:    return "Monday";
-            case Tuesday:   return "Tuesday";
-            case Wednesday: return "Wednesday";
-            case Thursday:  return "Thursday";
-            case Friday:    return "Friday";
-            case Saturday:  return "Satuday";
-            default: assert_not_reached();
-            }
-        }
-
-        public static DayOfWeek parse(string day) {
-            switch (day) {
-            case "Sunday":    return Sunday;
-            case "Monday":    return Monday;
-            case "Tuesday":   return Tuesday;
-            case "Wednesday": return Wednesday;
-            case "Thursday":  return Thursday;
-            case "Friday":    return Friday;
-            case "Saturday":  return Saturday;
-
-            case "SU":  return Sunday;
-            case "MO":  return Monday;
-            case "TU":  return Tuesday;
-            case "WE":  return Wednesday;
-            case "TH":  return Thursday;
-            case "FR":  return Friday;
-            case "SA":  return Saturday;
-
-            default: return UNKNOWN;
-            }
-        } 
-
-        public static DayOfWeek[] all() {
-            return { Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday };
-        }        
-
-    }
     /**
     * last_dayofmonth
     * 
@@ -109,7 +61,7 @@ namespace CatLock
 
 public class CatLock.Holiday : Object
 {
-    public Holiday next;       		//  next => in list
+    public Holiday next;       		    //  next => in list
     public int date;            		//  vevent dtstart
     public string description = ""; 	//  vevent summary
 
@@ -151,7 +103,7 @@ public class CatLock.Holidays : Object
     public Holidays.from_path(string path, int test_date=0) {
         this(test_date);
         var cal = new Calendar(path);
-        Rule? rr;
+        RRule? rr;
 
         count = 0;
         for (int i=0; i<cal.events.length; i++) {
@@ -164,17 +116,13 @@ public class CatLock.Holidays : Object
             }
         }
 
-        //  print(@"cal.events.length = $(cal.events.length)\n");
         for (int i=0; i<cal.events.length; i++) {
             if (cal.events[i].rrule != null) {
-                //  print(@"RULE:$(cal.events[i].summary)\n");
-                rr = new Rule(cal.events[i].rrule);
-                bool mlk = "20190121" == cal.events[i].dtstart;
-                //  if (mlk) print(@"::$(cal.events[i].dtstart) $(cal.events[i].rrule)\n");
+                rr = new RRule(cal.events[i].rrule);
+
                 if ("YEARLY" != rr.freq) continue;
 
                 int dtstart = int.parse(cal.events[i].dtstart);
-                //  print(@"$(rr.to_string())\n");
 
                 if (rr.byday != "" && rr.bymonth != "") {
                     /**
@@ -205,7 +153,6 @@ public class CatLock.Holidays : Object
                         /**
                         * Look for Last Nth Day
                         */
-                        //  print(@"Look for last $dayname day of month\n");
                         int last_day = last_dayofmonth(yyyy, bymonth);
                         int byday_name = "SU.MO.TU.WE.TH.FR.SA.".index_of(dayname);
                         if (byday_name < 0) break;
@@ -217,8 +164,6 @@ public class CatLock.Holidays : Object
                         /**
                         * Look for Nth Day of month
                         */
-                        //  if (mlk) print(@"Look for Nth $dayname day of month\n");
-        
                         int startday_name = dayofweek(yyyy/10000, bymonth, 1);
                         var byday_name = DayOfWeek.parse(dayname);
                         if (byday_name ==  DayOfWeek.UNKNOWN) break;
@@ -229,7 +174,6 @@ public class CatLock.Holidays : Object
                         else
                             days = (7 * (nth)) + 1;
                         int day = days - startday_name + byday_name;
-                        //  if (mlk) print(@"byday_name=$(byday_name), startday_name=$startday_name days=$days day=$day nth=$nth\n");
                         dtstart = yyyy + bymonth * 100 + day;
     
                         if (dtstart < today) yyyy += 10000;

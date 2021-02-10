@@ -41,7 +41,7 @@ sudo apt install libxpm-dev
 sudo apt install libimlib2-dev
 
 ```bash
-(meson build --prefix=/usr/local)
+(env CC=clang meson build --prefix=/usr/local)
 ninja -C build
 sudo ninja -C build install
 

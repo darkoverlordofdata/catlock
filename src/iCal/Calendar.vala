@@ -31,7 +31,7 @@ public errordomain CalendarException {
 /**
  * Load calendar from an ICS file 
  */
-public class CatLock.Calendar : Object
+public class ICal.Calendar : Object
 {
 	public string version = "";      	//  VERSION:2.0
 	public string prodid = "";       	//  PRODID:icalendar-ruby
@@ -40,31 +40,50 @@ public class CatLock.Calendar : Object
 	public string language = "";     	//  X-APPLE-LANGUAGE:en-US
 	public string region = "";       	//  X-APPLE-REGION:US
 	public string str = "";
-	public GenericArray<Event> events = new GenericArray<Event>(200);//
+	public GenericArray<EventNode> events = new GenericArray<EventNode>(200);//
 
 	/**
 	 * parse the calender from path
 	 */
 	public Calendar(string path) {
-		string s;
+		string s0;
+		string[] content;
 
-		FileUtils.get_contents(path, out s);
-		var s1 = /\r\n /.replace(s, -1, 0, "");		// remove spurious linefeeds
-		var s2 = /\\\; /.replace(s1, -1, 0, " ");	// remove slash-semicolon
-		var s3 = /\\, /.replace(s2, -1, 0, " ");	// remove slash-comma
-		var array = s3.split("\r\n");
-	
-		int count = array.length-1;
-		CalendarNode[] nodes = new CalendarNode[count];
-		for (int i=0; i<count; i++) {
-			nodes[i] = new CalendarNode(array[i]);
+		try {
+			FileUtils.get_contents(path, out s0);
+		}
+		catch (GLib.FileError e) {
+			print(@"Error: $(e.message)\n");
+			Process.exit(1);
 		}
 
-		Event? event = null;
+		// clean up the raw data:
+		try {
+			var s1 = /\r\n /.replace(s0, -1, 0, "");	// unfold description 
+			var s2 = /\\\; /.replace(s1, -1, 0, " ");	// remove slash-semicolon
+			var s3 = /\\, /.replace(s2, -1, 0, " ");	// remove slash-comma
+			content = s3.split("\r\n");
+		}
+		catch (GLib.RegexError e) {
+			print(@"Error: $(e.message)\n");
+			Process.exit(1);
+		}
+		int count = content.length-1;
+		CalendarNode[] nodes = new CalendarNode[count];
+		try {
+			for (int i=0; i<count; i++) {
+				nodes[i] = new CalendarNode(content[i]);
+			}
+		}
+		catch (CalendarException.InvalidCalendarNode e) {
+			print(@"Error: $(e.message)\n");
+			Process.exit(1);
+		}
+
+		EventNode? event = null;
 		int level = 0;
 
 		for (int i=0; i<count; i++) {
-			//  print(@"$i $(nodes[i])\n");
 
 			if ("BEGIN" == nodes[i].name) {
 				level++;
@@ -76,7 +95,7 @@ public class CatLock.Calendar : Object
 						break;
 					case 2:
 						if ("VEVENT" == nodes[i].value) {
-							event = new Event();
+							event = new EventNode();
 							events.insert(events.length, event);
 						}
 						else Process.exit(99);
